@@ -24,9 +24,15 @@ function getRandomInt(max) {
 function psevdoWS(){
     newValue = getRandomInt(100);
     grafValues[grafValues.length]=newValue;
-    newTime =new Date(newTime.getTime()+getRandomInt(1000));
-    //newTime.setTime(Number(newTime)+getRandomInt(250));//setTime(milliseconds)     
-    grafTimes[grafTimes.length]="[ "+newTime.getHours()+":"+newTime.getMinutes()+":"+newTime.getSeconds()+"."+newTime.getMilliseconds()+" ]";   
+    //newTime =new Date(newTime.getTime()+getRandomInt(1000));
+    newTime=new Date();
+    console.log(newTime);    
+    grafTimes[grafTimes.length]="[ "+newTime.getHours()+":"+newTime.getMinutes()+":"+newTime.getSeconds()+"."+newTime.getMilliseconds()+" ]";  
+    //grafHours 
+    //grafMinutes
+    //grafSeconds
+    //grafMilliseconds
+    //сделать вывод столбиком
 }
 
 //ctx.lineWidth=5;
@@ -66,11 +72,11 @@ function dynamicDraw(){
     ctx.stroke();
     //y text
     ctx.fillStyle="black";
-    ctx.font=fontSize/1.5+"px verdana, sans-serif";
+    ctx.font=fontSize/2+"px verdana, sans-serif";
     ctx.textAlign="center";
     ctx.beginPath();
-    for(let i=0; i< 11; i++){
-        ctx.fillText(grafTimes[i], valToX(Ys,i),870*cordY+fontSize/3);
+    for(let i=0; i< grafTimes.length; i++){
+        ctx.fillText(grafTimes[i], valToX(Ys,i),870*cordY+fontSize/4);
     }
     ctx.stroke();
 }
@@ -109,15 +115,12 @@ function basisDraw(){
 function launcher(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     psevdoWS();
-    console.log(grafTimes+"/"+grafValues);
+    iterations+=1;
     staticDraw();
     dynamicDraw();
     basisDraw();
-
+    setTimeout(launcher, 250);
 }
-
-launcher();
-
 setTimeout(launcher, 250);
 
 
