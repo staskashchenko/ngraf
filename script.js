@@ -13,12 +13,35 @@ var ctx = canvas.getContext("2d");
 
 var newValue;
 var newTime=new Date();
-var grafTimes=["0s", "10s", "20s", "30s", "40s", "50s", "60s"];
-var grafValues=[0, 59, 75, 20, 20, 55, 40];
+var grafTimes=[];
+var grafValues=[];
 var iterations=0;
+var hh;
+var mm;
+var ss;
+var ms;
+var timeLimit=["00","00","15","888"];
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * max * 100)/100;
+}
+
+function time2Beutify(arg){
+    if((arg+"").length<2){
+        return "0"+arg;
+    }else{
+        return arg;
+    }
+}
+
+function time4Beutify(arg){
+    if((arg+"").length==1){
+        return "00"+arg;
+    }else if((arg+"").length==2){
+        return "0"+arg;
+    }else if((arg+"").length==3){
+        return +arg;
+    }
 }
 
 function psevdoWS(){
@@ -26,13 +49,61 @@ function psevdoWS(){
     grafValues[grafValues.length]=newValue;
     //newTime =new Date(newTime.getTime()+getRandomInt(1000));
     newTime=new Date();
-    console.log(newTime);    
-    grafTimes[grafTimes.length]="[ "+newTime.getHours()+":"+newTime.getMinutes()+":"+newTime.getSeconds()+"."+newTime.getMilliseconds()+" ]";  
+    //console.log(newTime);    
+    grafTimes[grafTimes.length]=time2Beutify(newTime.getHours())+":"+time2Beutify(newTime.getMinutes())+":"+time2Beutify(newTime.getSeconds())+"."+time4Beutify(newTime.getMilliseconds());  
     //grafHours 
     //grafMinutes
     //grafSeconds
     //grafMilliseconds
     //сделать вывод столбиком
+}
+
+function toMillisec(arg){
+    var lhh;
+    var lmm;
+    var lss;
+    var lms;
+    var lArr=arg.split(":");
+    var lArr2=lArr[2].split(".");
+    lArr[2]=lArr2[0];
+    lArr[3]=lArr2[1];
+    return lArr[3]/1+lArr[2]/1*1000+lArr[1]/1*60000+lArr[0]/1*3600000;
+}
+
+function toSep(arg){
+    var lhh;
+    var lmm;
+    var lss;
+    var lms;
+    var lArr=arg.split(":");
+    var lArr2=lArr[2].split(".");
+    lArr[2]=lArr2[0];
+    lArr[3]=lArr2[1];
+    return lArr;
+}
+
+function byPeriodLimiter(){
+    //console.log(grafTimes);
+    //console.log(grafValues);
+    var date=new Date();
+    var numTimeLim=timeLimit[0]*3600000+timeLimit[1]*60000+timeLimit[2]*1000+timeLimit[3]/1;
+    var numTimeSep;
+    var numTime;
+    var newTimeArr=[];
+    var newValueArr=[];
+    date=date.getHours()*3600000+date.getMinutes()*60000+date.getSeconds()*1000+date.getMilliseconds();    
+    numTimeSep=toSep(grafTimes[0]);
+    numTime=numTimeSep[0]*3600000+numTimeSep[1]*60000+numTimeSep[2]*1000+numTimeSep[3]/1;
+    //console.log("Разница:"+date-numTime+">"+numTimeLim);
+    console.log(date-numTime+">"+numTimeLim);
+    if(date-numTime>numTimeLim){
+        for(let i=0;i<grafTimes.length-2;i++){
+            newTimeArr[i]=grafTimes[i+1];
+            newValueArr[i]=grafValues[i+1];
+        }
+        grafTimes=newTimeArr;
+        grafValues=newValueArr;
+    }
 }
 
 //ctx.lineWidth=5;
@@ -42,10 +113,11 @@ function psevdoWS(){
 //ctx.strokeStyle="blue";
 //ctx.strokeRect(300,300,300,700);
 
+//graf y addapting
 function valToY(value){
     return (850-7.5*value)*cordY;
 }
-
+//graf x addapting
 function valToX(Ys,i){
     return (100+i*800/(Ys-1))*cordX;
 }
@@ -115,10 +187,11 @@ function basisDraw(){
 function launcher(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     psevdoWS();
-    iterations+=1;
+    //iterations+=1;
     staticDraw();
     dynamicDraw();
     basisDraw();
+    byPeriodLimiter();
     setTimeout(launcher, 250);
 }
 setTimeout(launcher, 250);
