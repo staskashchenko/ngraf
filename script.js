@@ -16,11 +16,12 @@ var newTime=new Date();
 var grafTimes=[];
 var grafValues=[];
 var iterations=0;
+var arrSize=0;
 var hh;
 var mm;
 var ss;
 var ms;
-var timeLimit=["00","00","15","888"];
+var timeLimit=["00","00","5","0"];
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * max * 100)/100;
@@ -95,14 +96,19 @@ function byPeriodLimiter(){
     numTimeSep=toSep(grafTimes[0]);
     numTime=numTimeSep[0]*3600000+numTimeSep[1]*60000+numTimeSep[2]*1000+numTimeSep[3]/1;
     //console.log("Разница:"+date-numTime+">"+numTimeLim);
-    console.log(date-numTime+">"+numTimeLim);
+    //console.log(date-numTime+">"+numTimeLim);
     if(date-numTime>numTimeLim){
-        for(let i=0;i<grafTimes.length-2;i++){
-            newTimeArr[i]=grafTimes[i+1];
-            newValueArr[i]=grafValues[i+1];
+        if(arrSize==0){
+            arrSize=grafTimes.length;
+        }else if(grafTimes.length>=arrSize){
+            for(let i=0;i<grafTimes.length-2;i++){
+                newTimeArr[i]=grafTimes[i+1];
+                newValueArr[i]=grafValues[i+1];
+            }
+            grafTimes=newTimeArr;
+            grafValues=newValueArr;
         }
-        grafTimes=newTimeArr;
-        grafValues=newValueArr;
+        
     }
 }
 
@@ -115,11 +121,11 @@ function byPeriodLimiter(){
 
 //graf y addapting
 function valToY(value){
-    return (850-7.5*value)*cordY;
+    return (1000-10*value)*cordY;
 }
 //graf x addapting
 function valToX(Ys,i){
-    return (100+i*800/(Ys-1))*cordX;
+    return (i*1000/(Ys-1))*cordX;
 }
 
 function dynamicDraw(){
@@ -129,8 +135,8 @@ function dynamicDraw(){
     ctx.strokeStyle="#C0C0C0";
     ctx.lineWidth=1;
     for(let i=1; i< Ys; i++){
-        ctx.moveTo(valToX(Ys,i),860*cordY);
-        ctx.lineTo(valToX(Ys,i),100*cordY);
+        ctx.moveTo(valToX(Ys,i),1000*cordY);
+        ctx.lineTo(valToX(Ys,i),0);
     }
     ctx.stroke();
     //graf lines
@@ -143,13 +149,14 @@ function dynamicDraw(){
     }
     ctx.stroke();
     //y text
+    /*
     ctx.fillStyle="black";
     ctx.font=fontSize/2+"px verdana, sans-serif";
     ctx.textAlign="center";
     ctx.beginPath();
     for(let i=0; i< grafTimes.length; i++){
         ctx.fillText(grafTimes[i], valToX(Ys,i),870*cordY+fontSize/4);
-    }
+    }*/
     ctx.stroke();
 }
 
@@ -159,39 +166,40 @@ function staticDraw(){
     ctx.strokeStyle="#C0C0C0";
     ctx.lineWidth=1;
     for(let i=0; i< 11; i++){
-        ctx.moveTo(95*cordX,(i*75+100)*cordY);
-        ctx.lineTo(900*cordX,(i*75+100)*cordY);
+        ctx.moveTo(0*cordX,(i*100)*cordY);
+        ctx.lineTo(1000*cordX,(i*100)*cordY);
     }
     ctx.stroke();
     //y text
-    ctx.fillStyle="black";
+    /*ctx.fillStyle="black";
     ctx.font=fontSize/1.5+"px verdana, sans-serif";
     ctx.textAlign="right";
     for(let i=0; i< 11; i++){
         ctx.fillText((100-10*i)+"", 90*cordX,(i*75+100)*cordY+fontSize/3);
-    }
+    }*/
  
 }
 
 function basisDraw(){
     //graf basis
     ctx.beginPath();
-    ctx.moveTo(100*cordX,100*cordY);
+    ctx.moveTo(0,0);
     ctx.strokeStyle="black";
     ctx.lineWidth=5;
-    ctx.lineTo(100*cordX,850*cordY);
-    ctx.lineTo(900*cordX,850*cordY);
+    ctx.lineTo(2*cordX,998*cordY);
+    ctx.lineTo(998*cordX,998*cordY);
     ctx.stroke();
 }
 
 function launcher(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     psevdoWS();
+    byPeriodLimiter();
     //iterations+=1;
     staticDraw();
     dynamicDraw();
     basisDraw();
-    byPeriodLimiter();
+    
     setTimeout(launcher, 250);
 }
 setTimeout(launcher, 250);
