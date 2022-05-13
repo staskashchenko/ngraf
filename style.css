@@ -1,3 +1,40 @@
 canvas {
     background-color: white;
 }
+.myContainer{
+    height: 700px;
+}
+.graf{
+    position:absolute;
+    top:0px;
+    left: 155px;
+    width:1000px;
+    height: 500px;
+}
+.bottomBlock{
+    position:absolute;
+    left:0px;
+    top:500px;
+    width: 1205px;
+    height: 200px;   
+}
+.leftBlock{
+    position:absolute;
+    left:0px;
+    top:0px;
+    width: 150px;
+    height: 500px;   
+}
+.zeroZero{
+    position:absolute;
+    left:125px;
+    top:480px;
+    font-size: large;
+}
+#input{
+    position: absolute;
+    left: 1155px;
+    top:0px;
+    width:300px;
+    height: 300px;
+}
