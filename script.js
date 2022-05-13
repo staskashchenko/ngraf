@@ -18,19 +18,49 @@ var T;  //период между самой левой и самой право
 var dt; //время между изменениями периода T
 var u;  //величина изменения T в миллисекундах каждые dt миллисекунд
 var wst; //величина промежутка времени между поступлением времени
+var points=[];//двумерный массив точек
+var startTime=new Date();
+var timeIterator=0;
 //input
-document.forms.inx.onsubmit = function(){
+//input T
+document.forms.inT.onsubmit = function(){
     var message = this.message.value;
+    T=message;
     console.log(message);
     return false;
-  };
-function input(){
-    
-}
+};
+//input dt
+document.forms.indt.onsubmit = function(){
+    var message = this.message.value;
+    dt=message;
+    console.log(message);
+    return false;
+};
+//input u
+document.forms.inu.onsubmit = function(){
+    var message = this.message.value;
+    u=message;
+    console.log(message);
+    return false;
+};
+//input wst
+document.forms.inwst.onsubmit = function(){
+    var message = this.message.value;
+    wst=message;
+    console.log(message);
+    return false;
+};
 //WS
-function WS(){
-
+//random int
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max * 100)/100;
 }
+function WS(){
+    points[timeIterator]=[startTime+timeIterator*u,getRandomInt(100)];
+    timeIterator++;
+    setTimeout(WS,wst);
+}
+WS();
 //draw
 function draw(){
 
