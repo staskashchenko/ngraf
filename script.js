@@ -15,8 +15,8 @@ var bcordY = bottom.height/1000;
 var bctx = bottom.getContext("2d");
 //VAR's
 var T=5000;  //период между самой левой и самой правой точкой отображается на графе
-var dt=30; //время между изменениями периода T
-var u=30;  //величина изменения T в миллисекундах каждые dt миллисекунд
+var dt=20; //время между изменениями периода T
+var u=1;  //величина изменения T в миллисекундах каждые dt миллисекунд
 var wst=200; //величина промежутка времени между поступлением времени
 var Vx;//скорость в 1/1000 долях канваса
 var t0=new Date();
@@ -34,7 +34,8 @@ var timeIterator=0;
 document.forms.inT.onsubmit = function(){
     var message = this.message.value;
     if(isNaN(message)==false){
-        T=message;
+        T=Number(message);
+        t1=t0+T;
         console.log(message);
     }
     return false;
@@ -43,7 +44,7 @@ document.forms.inT.onsubmit = function(){
 document.forms.indt.onsubmit = function(){
     var message = this.message.value;
     if(isNaN(message)==false){
-        dt=message;
+        dt=Number(message);
         console.log(message);
     }
     return false;
@@ -52,7 +53,7 @@ document.forms.indt.onsubmit = function(){
 document.forms.inu.onsubmit = function(){
     var message = this.message.value;
     if(isNaN(message)==false){
-        u=message;
+        u=Number(message);
         console.log(message);
     }
     return false;
@@ -61,7 +62,7 @@ document.forms.inu.onsubmit = function(){
 document.forms.inwst.onsubmit = function(){
     var message = this.message.value;
     if(isNaN(message)==false){
-        wst=message;
+        wst=Number(message);
         console.log(message);
     }
     return false;
@@ -88,50 +89,69 @@ function basisDraw(){
     gctx.lineTo(1000*gcordX,1000*gcordY);
     gctx.stroke();
 }
-function yLinesDraw(X){
+function xLinesDraw(){
     gctx.beginPath();
     gctx.strokeStyle="#C0C0C0";
     gctx.lineWidth=1;
-    gctx.moveTo(X*gcordX,1000*gcordY);
-    gctx.lineTo(X*gcordX,0);
+    for(let i=0;i<10;i++){
+        gctx.moveTo(0,i*100*gcordY);
+        gctx.lineTo(1000*gcordX,i*100*gcordY);
+    }
     gctx.stroke();
 }
-function grafLineDraw(t0,t1){
-    glcordX=1000*gcordX/(t1-t0);
+function yLinesDraw(lt0,lt1){
+    var i0=0;
+    var i1=0;
+    for(let i=0;i<pointsT.length-1;i++){
+        if((lt0>=pointsT[i])&&(lt0<=pointsT[i+1])){
+            i0=i;
+        }
+        if((lt1>=pointsT[i])&&(lt1<=pointsT[i+1])){
+            i1=i+1;
+        }
+    }
+    var lx0;
+    gctx.beginPath();
+    gctx.strokeStyle="#C0C0C0";
+    gctx.lineWidth=1;
+    for(let i=i0;i<i1+1;i++){
+        lx0=(pointsT[i]-lt0)*1000*gcordX/(lt1-lt0);
+        gctx.moveTo(lx0,1000*gcordY);
+        gctx.lineTo(lx0,0);
+    }
+    gctx.stroke();
+}
+function grafLineDraw(lt0,lt1){
+    var i0=0;
+    var i1=0;
+    for(let i=0;i<pointsT.length-1;i++){
+        if((lt0>=pointsT[i])&&(lt0<=pointsT[i+1])){
+            i0=i;
+        }
+        if((lt1>=pointsT[i])&&(lt1<=pointsT[i+1])){
+            i1=i+1;
+        }
+    }
+    var lx0;
+    var lY0;
+    var lx1;
+    var lY1;
     gctx.beginPath();
     gctx.strokeStyle="black";
     gctx.lineWidth=2;
-    var i=1;
-    var k0=0;
-    var k1=0;
-    console.log("////////////"+i);
-    while(t1>=Number(pointsT[i])){
-        //console.log("while");
-        if(t0<=Number(pointsT[i])){
-            if(k0==0){
-                k0=1;
-                console.log("k0 "+pointsV[i+1]);
-            }
-            //console.log("if");
-            //console.log((t0-Number(pointsT[i]))*glcordX);
-            //console.log((1000-pointsV[i]*10)*gcordY);
-            gctx.font="15px Verdana";
-            gctx.strokeText("[ "+pointsV[i]+" ]",(Number(pointsT[i])-t0)*glcordX,(1000-pointsV[i]*10)*gcordY);
-            gctx.moveTo((Number(pointsT[i])-t0)*glcordX,(1000-pointsV[i]*10)*gcordY);
-            gctx.strokeText("[ "+pointsV[i+1]+" ]",(Number(pointsT[i+1])-t0)*glcordX,(1000-pointsV[i+1]*10)*gcordY);
-            gctx.lineTo((Number(pointsT[i+1])-t0)*glcordX,(1000-pointsV[i+1]*10)*gcordY);
-            gctx.font="15px Verdana";
-            gctx.strokeText(i+" - "+i+1,((Number(pointsT[i+1])-t0)*glcordX+(Number(pointsT[i])-t0)*glcordX)/2,((1000-pointsV[i]*10)*gcordY+(1000-pointsV[i+1]*10)*gcordY)/2);
-        }
-        i++;
+    gctx.font="15px Verdana";
+    for(let i=i0;i<i1+1;i++){
+        lx0=(pointsT[i]-lt0)*1000*gcordX/(lt1-lt0);
+        lY0=(1000-10*pointsV[i])*gcordY;
+        lx1=(pointsT[i+1]-lt0)*1000*gcordX/(lt1-lt0);
+        lY1=(1000-10*pointsV[i+1])*gcordY;
+        gctx.strokeText("[ "+pointsV[i]+" ]",lx0,lY0);
+        gctx.moveTo(lx0,lY0);
+        gctx.lineTo(lx1,lY1);
     }
-    console.log("k1 "+pointsV[i+1]);
-    gctx.moveTo((Number(pointsT[i])-t0)*glcordX,(1000-pointsV[i]*10)*gcordY);
-    gctx.lineTo((Number(pointsT[i+1])-t0)*glcordX,(1000-pointsV[i+1]*10)*gcordY);
     gctx.stroke();
 }
 
-//grafLineDraw((new Date()).getTime(),(new Date()).getTime()+5000);
 //setGraf
 function setGraf(){
     var i=0;
@@ -162,19 +182,20 @@ function set(){
 
 }
 //launcher
-function test(){
+function grafDraw(){
     gctx.clearRect(0, 0, graf.width, graf.height);
-    //console.log(pointsT);
-    //console.log(pointsV);
-    grafLineDraw(t0,t1);
+    xLinesDraw();
+    yLinesDraw(t0+5000,t1+10000);
+    grafLineDraw(t0+5000,t1+10000);
     basisDraw();
-    console.log(pointsT);
-    console.log(pointsV);
-    /*gctx.beginPath();
-    gctx.moveTo((Number(pointsT[0])-t0)*glcordX,(1000-pointsV[0]*10)*gcordY);
-    gctx.lineTo((Number(pointsT[1])-t0)*glcordX,(1000-pointsV[1]*10)*gcordY);
-    gctx.stroke();*/
-    //console.log("done");
-    setTimeout(test,1*wst);
+    setTimeout(grafDraw,20);
 }
-setTimeout(test,1*wst);
+grafDraw();
+
+function testdtu(){
+    t0=t0+u;
+    t1=t1+u;
+    setTimeout(testdtu,dt);
+}
+
+setTimeout(testdtu,dt);
