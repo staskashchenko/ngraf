@@ -25,12 +25,6 @@ canvas {
     width: 150px;
     height: 500px;   
 }
-.zeroZero{
-    position:absolute;
-    left:125px;
-    top:480px;
-    font-size: large;
-}
 #input{
     position: absolute;
     left: 1155px;
