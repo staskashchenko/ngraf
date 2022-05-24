@@ -225,12 +225,11 @@ function timeAdapt(milsecs){
     }
     return "["+hh+":"+mm+":"+ss+"."+ms+"]";
 }
-console.log(timeAdapt(new Date()));
+//console.log(timeAdapt(new Date()));
 function bottomDraw(lt0,lt1){
-    var startX=155;
-    var endX=1155;
-    var dDist=(points[1].date-points[0].date)*1000*gcordX/(lt1-lt0);
-    console.log(dDist);
+    //var startX=155;
+    //var endX=1155;
+    
     var i0=0;
     var i1=0;
     for(let i=0;i<points.length-1;i++){
@@ -253,12 +252,22 @@ function bottomDraw(lt0,lt1){
     bctx.strokeStyle="black";
     bctx.textAlign="center";
     bctx.lineWidth=2;
-    bctx.font="15px Verdana";
+    bctx.font="10px Verdana";
+    var lws=0;
+    var lwsSum=1;
     for(let i=i0;i<i1;i++){
-        lx0=startX+(points[i].date-lt0)*1000*gcordX/(lt1-lt0);
-        bctx.fillText(lx0,985*bcordY);
-        bctx.moveTo(lx0,985*bcordY);
-        bctx.lineTo(lx0,0);
+        lx0=(points[i].date-lt0)*1000*gcordX/(lt1-lt0);
+        if(points.length>2){
+            lws=Number(points[i+1].date)-Number(points[i].date);
+            console.log(lws);
+        }
+        lwsSum+=lws;
+        //T/lws>=8.5
+        if((T/lwsSum<=13)&&(i%2==0)){
+            lwsSum=1;
+            bctx.fillText(timeAdapt(points[i].date),lx0,60*bcordY);
+        }
+        
     }
     bctx.stroke();
 }
@@ -272,6 +281,8 @@ function grafDraw(){
     yLinesDraw(t0,t1);
     grafLineDraw(t0,t1);
     basisDraw();
+    bctx.clearRect(0, 0, bottom.width, bottom.height);
+    bottomDraw(t0,t1);
     setTimeout(grafDraw,20);
 }
 
