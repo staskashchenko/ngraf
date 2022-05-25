@@ -23,6 +23,8 @@ var t0=new Date();
 t0=t0.getTime();
 var t1;
 t1=t0+T;//крайние точки графа
+var pDisIter=0;
+var oi0=0;
 //var pointsT=[];//времена
 //var pointsV=[];//значения
 //var timeIterator=0;
@@ -94,7 +96,6 @@ function WS(){
     }));
 
     //timeIterator++;
-    //console.log(points.date);
     setTimeout(WS,wst);
 }
 //draw
@@ -225,11 +226,16 @@ function timeAdapt(milsecs){
     }
     return "["+hh+":"+mm+":"+ss+"."+ms+"]";
 }
-//console.log(timeAdapt(new Date()));
+
+function lxCount(i){
+    return (points[i].date-t0)*1000*gcordX/(t1-t0);
+}
+
+function deltaCount(i0,i1){
+    console.log(lxCount(i1,t0,t1)-lxCount(i0,t0,t1));
+}
+
 function bottomDraw(lt0,lt1){
-    //var startX=155;
-    //var endX=1155;
-    
     var i0=0;
     var i1=0;
     for(let i=0;i<points.length-1;i++){
@@ -238,7 +244,11 @@ function bottomDraw(lt0,lt1){
             piNext = points[i+1];
 
         if((lt0>=pi.date)&&(lt0<=piNext.date)){
+            oi0=i0;
             i0=i;
+            if(i0!=oi0){
+                pDisIter++;
+            }
         }
         if((lt1>=pi.date)&&(lt1<=piNext.date)){
             i1=i+1;
@@ -246,8 +256,40 @@ function bottomDraw(lt0,lt1){
             i1=points.length-1;
         }
     }
-
     var lx0;
+    var oi4txt=0;
+    var k=0;
+    bctx.beginPath();
+    bctx.strokeStyle="black";
+    bctx.textAlign="center";
+    bctx.lineWidth=2;
+    bctx.font="10px Verdana";
+    for(let i=i0;i<i1;i++){
+        lx0=lxCount(i,lt0,lt1);
+        
+        //if((lx0-lxCount(oi4txt,lt0,lt1)>=gcordX*1000/(gcordX*1000/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1))))&&(i%(1000*gcordX/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1)))==0)){
+        if((lx0-lxCount(oi4txt,lt0,lt1)>=1000*gcordX/12.5)&&(pDisIter*(lx0-lxCount(oi4txt,lt0,lt1)>=80*gcordX))){
+            bctx.fillText(timeAdapt(points[i].date),lx0,60*bcordY);
+            oi4txt=i;
+            pDisIter=0;
+            k=1;
+        }
+        //if(lx0-lxCount(oi4txt,lt0,lt1)/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1))>=1000/12.5){
+        for(let j=i0;j<i1;j++){   
+            if(k==1){
+                lx0=lxCount(j,lt0,lt1);
+                bctx.fillText(timeAdapt(points[j].date),lx0,60*bcordY);
+                oi4txt=j;
+            }
+        }
+        k=0;
+    }
+    bctx.stroke();
+    /*var olx0;
+    var oiText=0;
+    var deltaX=0;
+    var sumDeltaX=0;
+
     bctx.beginPath();
     bctx.strokeStyle="black";
     bctx.textAlign="center";
@@ -255,21 +297,40 @@ function bottomDraw(lt0,lt1){
     bctx.font="10px Verdana";
     var lws=0;
     var lwsSum=1;
-    for(let i=i0;i<i1;i++){
-        lx0=(points[i].date-lt0)*1000*gcordX/(lt1-lt0);
+    var li0;
+    if((wst/T>=0.04)&&(i0>=(T/wst)/12.5)){
+        li0=i0-Math.floor((T/wst)/12.5);
+    }else{
+        li0=0;
+    }
+    for(let i=li0;i<i1;i++){
+        //lx0=(points[i].date-lt0)*1000*gcordX/(lt1-lt0);
+        lx0=lxCount(i,lt0,lt1);
+        deltaX=olx0-lx0;
+        //console.log(deltaX+"vfwerjgn");
         if(points.length>2){
             lws=Number(points[i+1].date)-Number(points[i].date);
-            console.log(lws);
         }
         lwsSum+=lws;
         //T/lws>=8.5
-        if((T/lwsSum<=13)&&(i%2==0)){
+        if((T/lwsSum<=1000/(T/wst))&&(i%2==0)){
             lwsSum=1;
             bctx.fillText(timeAdapt(points[i].date),lx0,60*bcordY);
         }
-        
+        olx0=lx0;
     }
     bctx.stroke();
+
+
+       /* lx0=(points[i].date-lt0)*1000*gcordX/(lt1-lt0);
+        deltaX=olx0-lx0;
+        sumDeltaX+=deltaX;
+        if(sumDeltaX>=1000*gcordX/13){
+            bctx.strokeText(timeAdapt(points[i]),lx0,400);
+        }
+
+        olx0=lx0;*/
+
 }
 
 
@@ -300,3 +361,6 @@ function launcher(){
 }
 
 launcher();
+
+
+//setTimeout(only4test,2000);
