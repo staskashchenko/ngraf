@@ -38,9 +38,9 @@ class Point {
 };
 //input
 //input T
-document.querySelector("#inT").addEventListener("change", (e)=>{
+/*document.querySelector("#inT").addEventListener("change", (e)=>{
     console.log(e.value);
-});
+});*/
 
 document.forms.inT.onsubmit = function(){
     var message = this.message.value;
@@ -52,6 +52,10 @@ document.forms.inT.onsubmit = function(){
     return false;
 };
 //input dt
+/*document.querySelector("#indt").addEventListener("change", (e)=>{
+    console.log(e.value);
+});*/
+
 document.forms.indt.onsubmit = function(){
     var message = this.message.value;
     if(isNaN(message)==false){
@@ -87,15 +91,10 @@ function getRandomInt(max) {
 
 
 function WS(){
-    //pointsT[timeIterator]=new Date();
-    //pointsV[timeIterator]=getRandomInt(100);
-
     points.push(new Point({
         date: new Date(),
         value: getRandomInt(100)
     }));
-
-    //timeIterator++;
     setTimeout(WS,wst);
 }
 //draw
@@ -134,13 +133,6 @@ function yLinesDraw(lt0,lt1){
         }else{
             i1=points.length-1;
         }
-
-        /*if((lt0>=pointsT[i])&&(lt0<=pointsT[i+1])){
-            i0=i;
-        }
-        if((lt1>=pointsT[i])&&(lt1<=pointsT[i+1])){
-            i1=i+1;
-        }*/
     }
 
     var lx0;
@@ -150,8 +142,6 @@ function yLinesDraw(lt0,lt1){
     for(let i=i0;i<i1;i++){
 
         lx0=(points[i].date-lt0)*1000*gcordX/(lt1-lt0);
-
-        //lx0=(pointsT[i]-lt0)*1000*gcordX/(lt1-lt0);
         gctx.moveTo(lx0,1000*gcordY);
         gctx.lineTo(lx0,0);
     }
@@ -226,11 +216,11 @@ function timeAdapt(milsecs){
     }
     return "["+hh+":"+mm+":"+ss+"."+ms+"]";
 }
-
+//x cord calculation
 function lxCount(i){
     return (points[i].date-t0)*1000*gcordX/(t1-t0);
 }
-
+//delta x between points(I'll need for dynamic text render in bottom block)
 function deltaCount(i0,i1){
     console.log(lxCount(i1,t0,t1)-lxCount(i0,t0,t1));
 }
@@ -285,52 +275,6 @@ function bottomDraw(lt0,lt1){
         k=0;
     }
     bctx.stroke();
-    /*var olx0;
-    var oiText=0;
-    var deltaX=0;
-    var sumDeltaX=0;
-
-    bctx.beginPath();
-    bctx.strokeStyle="black";
-    bctx.textAlign="center";
-    bctx.lineWidth=2;
-    bctx.font="10px Verdana";
-    var lws=0;
-    var lwsSum=1;
-    var li0;
-    if((wst/T>=0.04)&&(i0>=(T/wst)/12.5)){
-        li0=i0-Math.floor((T/wst)/12.5);
-    }else{
-        li0=0;
-    }
-    for(let i=li0;i<i1;i++){
-        //lx0=(points[i].date-lt0)*1000*gcordX/(lt1-lt0);
-        lx0=lxCount(i,lt0,lt1);
-        deltaX=olx0-lx0;
-        //console.log(deltaX+"vfwerjgn");
-        if(points.length>2){
-            lws=Number(points[i+1].date)-Number(points[i].date);
-        }
-        lwsSum+=lws;
-        //T/lws>=8.5
-        if((T/lwsSum<=1000/(T/wst))&&(i%2==0)){
-            lwsSum=1;
-            bctx.fillText(timeAdapt(points[i].date),lx0,60*bcordY);
-        }
-        olx0=lx0;
-    }
-    bctx.stroke();
-
-
-       /* lx0=(points[i].date-lt0)*1000*gcordX/(lt1-lt0);
-        deltaX=olx0-lx0;
-        sumDeltaX+=deltaX;
-        if(sumDeltaX>=1000*gcordX/13){
-            bctx.strokeText(timeAdapt(points[i]),lx0,400);
-        }
-
-        olx0=lx0;*/
-
 }
 
 
@@ -361,6 +305,3 @@ function launcher(){
 }
 
 launcher();
-
-
-//setTimeout(only4test,2000);
