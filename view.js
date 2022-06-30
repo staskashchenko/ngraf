@@ -256,6 +256,7 @@ class View{
     }
     //graf animation launcher
     launcher(){
+        console.log("init launcher");
         baseInit();
         leftGreyDraw();
         WS();
