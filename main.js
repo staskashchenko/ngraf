@@ -1,14 +1,15 @@
-function include(file) {
-  
-    var script  = document.createElement('script');
-    script.src  = file;
-    script.type = 'text/javascript';
-    script.defer = true;
-    
-    document.getElementsByTagName('head').item(0).appendChild(script);
-    
-  }
+import { PlotterModel } from './PlotterModel.js';
+import { View } from './View.js';
 
-  include('model.js');
-  include('view.js');
-  View.launch();
+const plotterModel=new PlotterModel({});
+const view=new View({});
+view.launcher();
+//View.launch();
+/*class TestClass{
+  cons(){
+    console.log("!");
+  }
+}
+const testing=new TestClass({});
+testing.cons();*/
+//test();

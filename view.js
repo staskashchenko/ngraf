@@ -1,3 +1,5 @@
+import { PlotterModel } from "./PlotterModel.js";
+import { points } from "./PlotterModel.js";
 class View{
     constructor () {
         this.pDisIter=0;//needs for bottomDraw
@@ -7,26 +9,31 @@ class View{
         //left canvas init
         this.leftCanvas=this.createElement('leftCanvas');
         //size of main div
-        this.grafRootDivWidth=115;
-        this.grafRootDivHeight=70;
+        this.grafRootDivWidth=1150;
+        this.grafRootDivHeight=700;
         //root element 
-        this.app=getElement('#root');
+        this.app=this.getElement('#root');
         //graf canvas create
-        this.graf=createElement('canvas','graf');
+        this.graf=this.createElement('canvas','graf');
         //graf canvas local cords
-        this.gcordX = graf.width/1000;
-        this.gcordY = graf.height/1000;
+        this.gcordX = this.graf.width/1000;
+        this.gcordY = this.graf.height/1000;
         //graf brush init
-        this.gctx = graf.getContext("2d");
+        this.gctx = this.graf.getContext("2d");
         //left canvas init
-        this.left=createElement('canvas','left');
+        this.left=this.createElement('canvas','left');
         //left canvas local cords
-        this.lcordX = left.width/1000;
-        this.lcordY = left.height/1000;
+        this.lcordX = this.left.width/1000;
+        this.lcordY = this.left.height/1000;
         //left brush init
-        this.lctx = left.getContext("2d");
+        this.lctx = this.left.getContext("2d");
         //bottom canvas init
-        this.bottom=createElement('canvas','bottom');
+        this.bottom=this.createElement('canvas','bottom');
+        //bottom canvas local cords
+        this.bcordX = this.bottom.width/1000;
+        this.bcordY = this.bottom.height/1000;
+        //bottom brush init
+        this.bctx = this.bottom.getContext("2d");
         
     }
     //element creation
@@ -42,23 +49,23 @@ class View{
     }
     //init(div and canvases create)
     baseInit(){
-        document.getElementById('root').style.width=grafRootDivWidth+'px';
-        document.getElementById('root').style.height=grafRootDivHeight+'px';
-        graf.id='graf';
-        gcordX = graf.width/1000;
-        gcordY = graf.height/1000;
-        left.id='left';
-        lcordX = left.width/1000;
-        lcordY = left.height/1000;
-        bottom.id='bottom';
-        app.append(left,graf,bottom);
-        document.getElementById('graf').style.width=grafRootDivWidth/1.15+'px';
-        document.getElementById('graf').style.height=grafRootDivHeight/1.4+'px';
-        document.getElementById('left').style.width=grafRootDivWidth/7.67+'px';
-        document.getElementById('left').style.height=grafRootDivHeight/1.4+'px';
-        document.getElementById('bottom').style.width=grafRootDivWidth/1.15+'px';
-        document.getElementById('bottom').style.height=grafRootDivHeight/3.5+'px';
-        document.getElementById('bottom').style.marginLeft=grafRootDivWidth/7.67+'px';
+        document.getElementById('root').style.width=this.grafRootDivWidth+'px';
+        document.getElementById('root').style.height=this.grafRootDivHeight+'px';
+        this.graf.id='graf';
+        this.gcordX = this.graf.width/1000;
+        this.gcordY = this.graf.height/1000;
+        this.left.id='left';
+        this.lcordX = this.left.width/1000;
+        this.lcordY = this.left.height/1000;
+        this.bottom.id='bottom';
+        this.app.append(this.left,this.graf,this.bottom);
+        document.getElementById('graf').style.width=this.grafRootDivWidth/1.15+'px';
+        document.getElementById('graf').style.height=this.grafRootDivHeight/1.4+'px';
+        document.getElementById('left').style.width=this.grafRootDivWidth/7.67+'px';
+        document.getElementById('left').style.height=this.grafRootDivHeight/1.4+'px';
+        document.getElementById('bottom').style.width=this.grafRootDivWidth/1.15+'px';
+        document.getElementById('bottom').style.height=this.grafRootDivHeight/3.5+'px';
+        document.getElementById('bottom').style.marginLeft=this.grafRootDivWidth/7.67+'px';
     }
     //time adapt(transforms date milliseconds format to String visual format)
     timeAdapt(milsecs){
@@ -89,24 +96,24 @@ class View{
     }
     //draw(x and y basis lines draw)
     basisDraw(){
-        gctx.beginPath();
-        gctx.strokeStyle="black";
-        gctx.lineWidth=3;
-        gctx.moveTo(0,0);
-        gctx.lineTo(0,1000*gcordY);
-        gctx.lineTo(1000*gcordX,1000*gcordY);
-        gctx.stroke();
+        this.gctx.beginPath();
+        this.gctx.strokeStyle="black";
+        this.gctx.lineWidth=3;
+        this.gctx.moveTo(0,0);
+        this.gctx.lineTo(0,1000*this.gcordY);
+        this.gctx.lineTo(1000*this.gcordX,1000*this.gcordY);
+        this.gctx.stroke();
     }
     //horisontal lines draw
     xLinesDraw(){
-        gctx.beginPath();
-        gctx.strokeStyle="#C0C0C0";
-        gctx.lineWidth=1;
+        this.gctx.beginPath();
+        this.gctx.strokeStyle="#C0C0C0";
+        this.gctx.lineWidth=1;
         for(let i=0;i<10;i++){
-            gctx.moveTo(0,i*100*gcordY);
-            gctx.lineTo(1000*gcordX,i*100*gcordY);
+            this.gctx.moveTo(0,i*100*this.gcordY);
+            this.gctx.lineTo(1000*this.gcordX,i*100*this.gcordY);
         }
-        gctx.stroke();
+        this.gctx.stroke();
     }
     //vertical lines draw
     yLinesDraw(lt0,lt1){
@@ -128,16 +135,16 @@ class View{
         }
     
         var lx0;
-        gctx.beginPath();
-        gctx.strokeStyle="#C0C0C0";
-        gctx.lineWidth=1;
+        this.gctx.beginPath();
+        this.gctx.strokeStyle="#C0C0C0";
+        this.gctx.lineWidth=1;
         for(let i=i0;i<i1;i++){
     
-            lx0=(points[i].date-lt0)*1000*gcordX/(lt1-lt0);
-            gctx.moveTo(lx0,1000*gcordY);
-            gctx.lineTo(lx0,0);
+            lx0=(points[i].date-lt0)*1000*this.gcordX/(lt1-lt0);
+            this.gctx.moveTo(lx0,1000*this.gcordY);
+            this.gctx.lineTo(lx0,0);
         }
-        gctx.stroke();
+        this.gctx.stroke();
     }
     //graf line draw
     grafLineDraw(lt0,lt1){
@@ -157,10 +164,10 @@ class View{
         var lY0;
         var lx1;
         var lY1;
-        gctx.beginPath();
-        gctx.strokeStyle="black";
-        gctx.lineWidth=2;
-        gctx.font="15px Verdana";
+        this.gctx.beginPath();
+        this.gctx.strokeStyle="black";
+        this.gctx.lineWidth=2;
+        this.gctx.font="15px Verdana";
         for(let i=i0;i<i1;i++){
             lx0=(points[i].date-lt0)*1000*gcordX/(lt1-lt0);
             lY0=(1000-10*points[i].value)*gcordY;
@@ -170,20 +177,20 @@ class View{
             gctx.moveTo(lx0,lY0);
             gctx.lineTo(lx1,lY1);
         }
-        gctx.stroke();
+        this.gctx.stroke();
     }
     //left draw
     leftGreyDraw(){
-        lctx.beginPath();
-        gctx.strokeStyle="black";
-        gctx.lineWidth=2;
-        gctx.font="15px Verdana";
-        lctx.fillText(0,905*lcordX,995*lcordY);
+        this.lctx.beginPath();
+        this.gctx.strokeStyle="black";
+        this.gctx.lineWidth=2;
+        this.gctx.font="15px Verdana";
+        this.lctx.fillText(0,905*this.lcordX,995*this.lcordY);
         for(let i=1;i<10; i++){
-            lctx.fillText(100*i,860*lcordX,(1000-100*i)*lcordY);
+            this.lctx.fillText(100*i,860*this.lcordX,(1000-100*i)*this.lcordY);
         }
-        lctx.fillText(1000,850*lcordX,15*lcordY);
-        lctx.stroke();    
+        this.lctx.fillText(1000,850*this.lcordX,15*this.lcordY);
+        this.lctx.stroke();    
     }
     //bottom draw
     bottomDraw(lt0,lt1){
@@ -210,17 +217,17 @@ class View{
         var lx0;
         var oi4txt=0;
         var k=0;
-        bctx.beginPath();
-        bctx.strokeStyle="black";
-        bctx.textAlign="center";
-        bctx.lineWidth=2;
-        bctx.font="10px Verdana";
+        this.bctx.beginPath();
+        this.bctx.strokeStyle="black";
+        this.bctx.textAlign="center";
+        this.bctx.lineWidth=2;
+        this.bctx.font="10px Verdana";
         for(let i=i0;i<i1;i++){
             lx0=lxCount(i,lt0,lt1);
             
             //if((lx0-lxCount(oi4txt,lt0,lt1)>=gcordX*1000/(gcordX*1000/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1))))&&(i%(1000*gcordX/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1)))==0)){
             if((lx0-lxCount(oi4txt,lt0,lt1)>=1000*gcordX/12.5)&&(pDisIter*(lx0-lxCount(oi4txt,lt0,lt1)>=80*gcordX))){
-                bctx.fillText(timeAdapt(points[i].date),lx0,60*bcordY);
+                this.bctx.fillText(timeAdapt(points[i].date),lx0,60*bcordY);
                 oi4txt=i;
                 pDisIter=0;
                 k=1;
@@ -229,38 +236,41 @@ class View{
             for(let j=i0;j<i1;j++){   
                 if(k==1){
                     lx0=lxCount(j,lt0,lt1);
-                    bctx.fillText(timeAdapt(points[j].date),lx0,60*bcordY);
+                    this.bctx.fillText(timeAdapt(points[j].date),lx0,60*bcordY);
                     oi4txt=j;
                 }
             }
             k=0;
         }
-        bctx.stroke();
+        this.bctx.stroke();
     }
     //1 frame draw
     grafDraw(){
-        gctx.clearRect(0, 0, graf.width, graf.height);
-        xLinesDraw();
-        yLinesDraw(t0,t1);
-        grafLineDraw(t0,t1);
-        basisDraw();
-        bctx.clearRect(0, 0, bottom.width, bottom.height);
-        bottomDraw(t0,t1);
-        setTimeout(grafDraw,20);
+        this.gctx.clearRect(0, 0, this.graf.width, this.graf.height);
+        this.xLinesDraw();
+        this.yLinesDraw(this.t0,this.t1);
+        this.grafLineDraw(this.t0,this.t1);
+        this.basisDraw();
+        this.bctx.clearRect(0, 0, this.bottom.width, this.bottom.height);
+        this.bottomDraw(this.t0,this.t1);
+        //setTimeout(this.grafDraw.bind(this),20);
+        //setTimeout(this.grafDraw.bind(this),20);
+        setTimeout(()=>{ this.grafDraw(); }, 20)
     }
     //
     dtuChanger(){
-        t0=t0+u;
-        t1=t1+u;
-        setTimeout(dtuChanger,dt);
+        this.t0=this.t0+this.u;
+        this.t1=this.t1+this.u;
+        setTimeout(this.dtuChanger,this.dt);
     }
     //graf animation launcher
     launcher(){
         console.log("init launcher");
-        baseInit();
-        leftGreyDraw();
-        WS();
-        setTimeout(dtuChanger,dt);
-        grafDraw();
+        this.baseInit();
+        this.leftGreyDraw();
+        //PlotterModel.WS();
+        setTimeout(this.dtuChanger,this.dt);
+        this.grafDraw();
     }
 }
+export { View };

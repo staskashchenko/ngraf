@@ -1,4 +1,9 @@
-class Model {
+/*function test(){
+    console.log("include");
+    alert("2");
+}
+export { test };*/
+class PlotterModel {
     constructor(params={}) {
         this.pointDate = params.date || new Date();//времена
         this.pointValue = params.value || 0;//значения
@@ -8,7 +13,8 @@ class Model {
         this.wst=200; //величина промежутка времени между поступлением времени
         this.Vx;//скорость в 1/1000 долях канваса
         this.t0=(new Date()).getTime();
-        this.t1=t0+T;//крайние точки графа
+        this.t1=this.t0+this.T;//крайние точки графа
+        this.points = new Array();
     }
     //random int generator for graf testing
     getRandomInt(max) {
@@ -23,3 +29,11 @@ class Model {
         setTimeout(WS,wst);
     }
 }
+class Point {
+    constructor(params={}) {
+        this.date = params.date || new Date();//времена
+        this.value = params.value || 0;//значения
+    }
+};
+const points=new Point({});
+export { PlotterModel, points };
