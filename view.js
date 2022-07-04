@@ -1,5 +1,5 @@
-import { PlotterModel } from "./PlotterModel.js";
-import { points } from "./PlotterModel.js";
+import { plotterModel } from './main.js';
+
 class View{
     constructor () {
         this.pDisIter=0;//needs for bottomDraw
@@ -52,23 +52,28 @@ class View{
         document.getElementById('root').style.width=this.grafRootDivWidth+'px';
         document.getElementById('root').style.height=this.grafRootDivHeight+'px';
         this.graf.id='graf';
-        this.gcordX = this.graf.width/1000;
-        this.gcordY = this.graf.height/1000;
+        this.gcordX = this.graf.width/300;
+        this.gcordY = this.graf.height/300;
         this.left.id='left';
-        this.lcordX = this.left.width/1000;
-        this.lcordY = this.left.height/1000;
+        this.lcordX = this.left.width/300;
+        this.lcordY = this.left.height/300;
         this.bottom.id='bottom';
+        this.bcordX = this.bottom.width/300;
+        this.bcordY = this.bottom.height/300;
         this.app.append(this.left,this.graf,this.bottom);
-        document.getElementById('graf').style.width=this.grafRootDivWidth/1.15+'px';
-        document.getElementById('graf').style.height=this.grafRootDivHeight/1.4+'px';
-        document.getElementById('left').style.width=this.grafRootDivWidth/7.67+'px';
-        document.getElementById('left').style.height=this.grafRootDivHeight/1.4+'px';
-        document.getElementById('bottom').style.width=this.grafRootDivWidth/1.15+'px';
-        document.getElementById('bottom').style.height=this.grafRootDivHeight/3.5+'px';
-        document.getElementById('bottom').style.marginLeft=this.grafRootDivWidth/7.67+'px';
+        document.getElementById('graf').width=this.grafRootDivWidth/1.15;
+        document.getElementById('graf').height=this.grafRootDivHeight/1.4;
+        
+        document.getElementById('left').width=this.grafRootDivWidth/7.67;
+        document.getElementById('left').height=this.grafRootDivHeight/1.4;
+        document.getElementById('bottom').width=this.grafRootDivWidth/1.15;
+        document.getElementById('bottom').height=this.grafRootDivHeight/3.5;
+        document.getElementById('bottom').style.marginLeft="150px";
+        this.bcordY=this.bcordY/2.5;
     }
     //time adapt(transforms date milliseconds format to String visual format)
     timeAdapt(milsecs){
+        console.log("ta");
         var hh=milsecs.getHours();
         var mm=milsecs.getMinutes();
         var ss=milsecs.getSeconds();
@@ -92,7 +97,7 @@ class View{
     }
     //x cord calculation(needs for x calculation of each point each iteration)
     lxCount(i){
-        return (points[i].date-t0)*1000*gcordX/(t1-t0);
+        return (plotterModel.points[i].date-plotterModel.t0)*1000*this.gcordX/(plotterModel.t1-plotterModel.t0);
     }
     //draw(x and y basis lines draw)
     basisDraw(){
@@ -116,21 +121,22 @@ class View{
         this.gctx.stroke();
     }
     //vertical lines draw
-    yLinesDraw(lt0,lt1){
+    yLinesDraw(){
+        //console.log("ylines");
         var i0=0;
         var i1=0;
-        for(let i=0;i<points.length-1;i++){
+        for(let i=0;i<plotterModel.points.length-1;i++){
     
-            let pi = points[i],
-                piNext = points[i+1];
+            let pi = plotterModel.points[i],
+                piNext = plotterModel.points[i+1];
     
-            if((lt0>=pi.date)&&(lt0<=piNext.date)){
+            if((plotterModel.t0>=pi.date)&&(plotterModel.t0<=piNext.date)){
                 i0=i;
             }
-            if((lt1>=pi.date)&&(lt1<=piNext.date)){
+            if((plotterModel.t1>=pi.date)&&(plotterModel.t1<=piNext.date)){
                 i1=i+1;
             }else{
-                i1=points.length-1;
+                i1=plotterModel.points.length-1;
             }
         }
     
@@ -140,24 +146,26 @@ class View{
         this.gctx.lineWidth=1;
         for(let i=i0;i<i1;i++){
     
-            lx0=(points[i].date-lt0)*1000*this.gcordX/(lt1-lt0);
+            lx0=(plotterModel.points[i].date-plotterModel.t0)*1000*this.gcordX/(plotterModel.t1-plotterModel.t0);
+            console.log(lx0);
             this.gctx.moveTo(lx0,1000*this.gcordY);
             this.gctx.lineTo(lx0,0);
         }
+        console.log(lx0);
         this.gctx.stroke();
     }
     //graf line draw
-    grafLineDraw(lt0,lt1){
+    grafLineDraw(){
         var i0=0;
         var i1=0;
-        for(let i=0;i<points.length-1;i++){
-            if((lt0>=points[i].date)&&(lt0<=points[i+1].date)){
+        for(let i=0;i<plotterModel.points.length-1;i++){
+            if((plotterModel.t0>=plotterModel.points[i].date)&&(plotterModel.t0<=plotterModel.points[i+1].date)){
                 i0=i;
             }
-            if((lt1>=points[i].date)&&(lt1<=points[i+1].date)){
+            if((plotterModel.t1>=plotterModel.points[i].date)&&(plotterModel.t1<=plotterModel.points[i+1].date)){
                 i1=i+1;
             }else{
-                i1=points.length-1;
+                i1=plotterModel.points.length-1;
             }
         }
         var lx0;
@@ -169,49 +177,53 @@ class View{
         this.gctx.lineWidth=2;
         this.gctx.font="15px Verdana";
         for(let i=i0;i<i1;i++){
-            lx0=(points[i].date-lt0)*1000*gcordX/(lt1-lt0);
-            lY0=(1000-10*points[i].value)*gcordY;
-            lx1=(points[i+1].date-lt0)*1000*gcordX/(lt1-lt0);
-            lY1=(1000-10*points[i+1].value)*gcordY;
-            gctx.strokeText("[ "+points[i].value+" ]",lx0,lY0);
-            gctx.moveTo(lx0,lY0);
-            gctx.lineTo(lx1,lY1);
+            lx0=(plotterModel.points[i].date-plotterModel.t0)*1000*this.gcordX/(plotterModel.t1-plotterModel.t0);
+            lY0=(1000-10*plotterModel.points[i].value)*this.gcordY;
+            lx1=(plotterModel.points[i+1].date-plotterModel.t0)*1000*this.gcordX/(plotterModel.t1-plotterModel.t0);
+            lY1=(1000-10*plotterModel.points[i+1].value)*this.gcordY;
+            this.gctx.strokeText("[ "+plotterModel.points[i].value+" ]",lx0,lY0);
+            this.gctx.moveTo(lx0,lY0);
+            this.gctx.lineTo(lx1,lY1);
         }
         this.gctx.stroke();
     }
     //left draw
     leftGreyDraw(){
+        //console.log("left");
         this.lctx.beginPath();
-        this.gctx.strokeStyle="black";
-        this.gctx.lineWidth=2;
-        this.gctx.font="15px Verdana";
-        this.lctx.fillText(0,905*this.lcordX,995*this.lcordY);
+        this.lctx.beginPath();
+        this.lctx.strokeStyle="black";
+        this.lctx.lineWidth=2;
+        this.lctx.font="15px Verdana";
+        this.lctx.fillText(0,135*this.lcordX,995*this.lcordY);
         for(let i=1;i<10; i++){
-            this.lctx.fillText(100*i,860*this.lcordX,(1000-100*i)*this.lcordY);
+            this.lctx.fillText(100*i,129*this.lcordX,(1000-100*i)*this.lcordY);
         }
-        this.lctx.fillText(1000,850*this.lcordX,15*this.lcordY);
+        this.lctx.fillText(100,120.5*this.lcordX,23*this.lcordY);
         this.lctx.stroke();    
     }
     //bottom draw
-    bottomDraw(lt0,lt1){
+    bottomDraw(){
+        //console.log(plotterModel.t0+" "+plotterModel.t1);
+        //console.log("bottom");
         var i0=0;
         var i1=0;
-        for(let i=0;i<points.length-1;i++){
+        for(let i=0;i<plotterModel.points.length-1;i++){
     
-            let pi = points[i],
-                piNext = points[i+1];
+            let pi = plotterModel.points[i],
+                piNext = plotterModel.points[i+1];
     
-            if((lt0>=pi.date)&&(lt0<=piNext.date)){
-                oi0=i0;
+            if((plotterModel.t0>=pi.date)&&(plotterModel.t0<=piNext.date)){
+                this.oi0=i0;
                 i0=i;
-                if(i0!=oi0){
+                if(i0!=this.oi0){
                     pDisIter++;
                 }
             }
-            if((lt1>=pi.date)&&(lt1<=piNext.date)){
+            if((plotterModel.t1>=pi.date)&&(plotterModel.t1<=piNext.date)){
                 i1=i+1;
             }else{
-                i1=points.length-1;
+                i1=plotterModel.points.length-1;
             }
         }
         var lx0;
@@ -222,21 +234,24 @@ class View{
         this.bctx.textAlign="center";
         this.bctx.lineWidth=2;
         this.bctx.font="10px Verdana";
+        
         for(let i=i0;i<i1;i++){
-            lx0=lxCount(i,lt0,lt1);
+            lx0=this.lxCount(i,plotterModel.t0,plotterModel.t1);
             
             //if((lx0-lxCount(oi4txt,lt0,lt1)>=gcordX*1000/(gcordX*1000/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1))))&&(i%(1000*gcordX/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1)))==0)){
-            if((lx0-lxCount(oi4txt,lt0,lt1)>=1000*gcordX/12.5)&&(pDisIter*(lx0-lxCount(oi4txt,lt0,lt1)>=80*gcordX))){
-                this.bctx.fillText(timeAdapt(points[i].date),lx0,60*bcordY);
+            if((lx0-this.lxCount(oi4txt,plotterModel.t0,plotterModel.t1)>=1000*this.bcordX/12.5)&&(this.pDisIter*(lx0-this.lxCount(oi4txt,plotterModel.t0,plotterModel.t1)>=80*this.bcordX))){
+                console.log("entr");
+                this.bctx.fillText(this.timeAdapt(plotterModel.points[i].date),lx0,60*this.bcordY);
                 oi4txt=i;
-                pDisIter=0;
+                this.pDisIter=0;
                 k=1;
             }
             //if(lx0-lxCount(oi4txt,lt0,lt1)/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1))>=1000/12.5){
             for(let j=i0;j<i1;j++){   
+                console.log("entr");
                 if(k==1){
-                    lx0=lxCount(j,lt0,lt1);
-                    this.bctx.fillText(timeAdapt(points[j].date),lx0,60*bcordY);
+                    lx0=lxCount(j,plotterModel.t0,plotterModel.t1);
+                    this.bctx.fillText(this.timeAdapt(plotterModel.points[j].date),lx0,60*bcordY);
                     oi4txt=j;
                 }
             }
@@ -248,28 +263,30 @@ class View{
     grafDraw(){
         this.gctx.clearRect(0, 0, this.graf.width, this.graf.height);
         this.xLinesDraw();
-        this.yLinesDraw(this.t0,this.t1);
-        this.grafLineDraw(this.t0,this.t1);
+        this.yLinesDraw();
+        this.grafLineDraw();
         this.basisDraw();
         this.bctx.clearRect(0, 0, this.bottom.width, this.bottom.height);
-        this.bottomDraw(this.t0,this.t1);
+        this.bottomDraw();
         //setTimeout(this.grafDraw.bind(this),20);
         //setTimeout(this.grafDraw.bind(this),20);
         setTimeout(()=>{ this.grafDraw(); }, 20)
     }
     //
     dtuChanger(){
-        this.t0=this.t0+this.u;
-        this.t1=this.t1+this.u;
-        setTimeout(this.dtuChanger,this.dt);
+        console.log("before:"+plotterModel.t0+", "+plotterModel.t1);
+        plotterModel.t0=plotterModel.t0+plotterModel.u;
+        plotterModel.t1=plotterModel.t1+plotterModel.u;
+        console.log("after:"+plotterModel.t0+", "+plotterModel.t1);
+        setTimeout(()=>{this.dtuChanger(); },plotterModel.dt);
     }
     //graf animation launcher
     launcher(){
-        console.log("init launcher");
+        //console.log("init launcher");
         this.baseInit();
         this.leftGreyDraw();
         //PlotterModel.WS();
-        setTimeout(this.dtuChanger,this.dt);
+        setTimeout(()=>{this.dtuChanger(); },plotterModel.dt);
         this.grafDraw();
     }
 }

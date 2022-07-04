@@ -3,6 +3,12 @@
     alert("2");
 }
 export { test };*/
+class Point {
+    constructor(params={}) {
+        this.date = params.date || new Date();//времена
+        this.value = params.value || 0;//значения
+    }
+};
 class PlotterModel {
     constructor(params={}) {
         this.pointDate = params.date || new Date();//времена
@@ -22,18 +28,12 @@ class PlotterModel {
     }
     //fake ws
     WS(){
-        points.push(new Point({
+        //console.log(this.points);
+        this.points.push(new Point({
             date: new Date(),
-            value: getRandomInt(100)
+            value: this.getRandomInt(100)
         }));
-        setTimeout(WS,wst);
+        setTimeout(()=>{this.WS()},this.wst);
     }
 }
-class Point {
-    constructor(params={}) {
-        this.date = params.date || new Date();//времена
-        this.value = params.value || 0;//значения
-    }
-};
-const points=new Point({});
-export { PlotterModel, points };
+export { PlotterModel };

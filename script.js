@@ -258,10 +258,10 @@ function bottomDraw(lt0,lt1){
         lx0=lxCount(i,lt0,lt1);
         
         //if((lx0-lxCount(oi4txt,lt0,lt1)>=gcordX*1000/(gcordX*1000/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1))))&&(i%(1000*gcordX/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1)))==0)){
-        if((lx0-lxCount(oi4txt,lt0,lt1)>=1000*gcordX/12.5)&&(pDisIter*(lx0-lxCount(oi4txt,lt0,lt1)>=80*gcordX))){
+        if((lx0-lxCount(oi4txt,lt0,lt1)>=1000*gcordX/12.5)&&(this.pDisIter*(lx0-lxCount(oi4txt,lt0,lt1)>=80*gcordX))){
             bctx.fillText(timeAdapt(points[i].date),lx0,60*bcordY);
             oi4txt=i;
-            pDisIter=0;
+            this.pDisIterpDisIter=0;
             k=1;
         }
         //if(lx0-lxCount(oi4txt,lt0,lt1)/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1))>=1000/12.5){
