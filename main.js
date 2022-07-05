@@ -6,3 +6,49 @@ plotterModel.WS();
 export { plotterModel };
 const view=new View({});
 view.launcher();
+//input
+//input T
+/*document.querySelector("#inT").addEventListener("change", (e)=>{
+    console.log(e.value);
+});*/
+
+document.forms.inT.onsubmit = function(){
+  var message = this.message.value;
+  if(isNaN(message)==false){
+      plotterModel.T=Number(message);
+      plotterModel.t1=plotterModel.t0+plotterModel.T;
+      console.log(message);
+  }
+  return false;
+};
+//input dt
+/*document.querySelector("#indt").addEventListener("change", (e)=>{
+  console.log(e.value);
+});*/
+
+document.forms.indt.onsubmit = function(){
+  var message = this.message.value;
+  if(isNaN(message)==false){
+      plotterModel.dt=Number(message);
+      console.log(message);
+  }
+  return false;
+};
+//input u
+document.forms.inu.onsubmit = function(){
+  var message = this.message.value;
+  if(isNaN(message)==false){
+      plotterModel.u=Number(message);
+      console.log(message);
+  }
+  return false;
+};
+//input wst
+document.forms.inwst.onsubmit = function(){
+  var message = this.message.value;
+  if(isNaN(message)==false){
+      plotterModel.wst=Number(message);
+      console.log(message);
+  }
+  return false;
+};

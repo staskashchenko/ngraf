@@ -73,7 +73,6 @@ class View{
     }
     //time adapt(transforms date milliseconds format to String visual format)
     timeAdapt(milsecs){
-        console.log("ta");
         var hh=milsecs.getHours();
         var mm=milsecs.getMinutes();
         var ss=milsecs.getSeconds();
@@ -122,7 +121,6 @@ class View{
     }
     //vertical lines draw
     yLinesDraw(){
-        //console.log("ylines");
         var i0=0;
         var i1=0;
         for(let i=0;i<plotterModel.points.length-1;i++){
@@ -189,7 +187,6 @@ class View{
     }
     //left draw
     leftGreyDraw(){
-        //console.log("left");
         this.lctx.beginPath();
         this.lctx.beginPath();
         this.lctx.strokeStyle="black";
@@ -204,8 +201,6 @@ class View{
     }
     //bottom draw
     bottomDraw(){
-        //console.log(plotterModel.t0+" "+plotterModel.t1);
-        //console.log("bottom");
         var i0=0;
         var i1=0;
         for(let i=0;i<plotterModel.points.length-1;i++){
@@ -217,7 +212,7 @@ class View{
                 this.oi0=i0;
                 i0=i;
                 if(i0!=this.oi0){
-                    pDisIter++;
+                    this.pDisIter++;
                 }
             }
             if((plotterModel.t1>=pi.date)&&(plotterModel.t1<=piNext.date)){
@@ -240,18 +235,16 @@ class View{
             
             //if((lx0-lxCount(oi4txt,lt0,lt1)>=gcordX*1000/(gcordX*1000/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1))))&&(i%(1000*gcordX/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1)))==0)){
             if((lx0-this.lxCount(oi4txt,plotterModel.t0,plotterModel.t1)>=1000*this.bcordX/12.5)&&(this.pDisIter*(lx0-this.lxCount(oi4txt,plotterModel.t0,plotterModel.t1)>=80*this.bcordX))){
-                console.log("entr");
                 this.bctx.fillText(this.timeAdapt(plotterModel.points[i].date),lx0,60*this.bcordY);
                 oi4txt=i;
                 this.pDisIter=0;
                 k=1;
             }
             //if(lx0-lxCount(oi4txt,lt0,lt1)/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1))>=1000/12.5){
-            for(let j=i0;j<i1;j++){   
-                console.log("entr");
+            for(let j=i0;j<i1;j++){
                 if(k==1){
-                    lx0=lxCount(j,plotterModel.t0,plotterModel.t1);
-                    this.bctx.fillText(this.timeAdapt(plotterModel.points[j].date),lx0,60*bcordY);
+                    lx0=this.lxCount(j,plotterModel.t0,plotterModel.t1);
+                    this.bctx.fillText(this.timeAdapt(plotterModel.points[j].date),lx0,60*this.bcordY);
                     oi4txt=j;
                 }
             }
@@ -270,19 +263,17 @@ class View{
         this.bottomDraw();
         //setTimeout(this.grafDraw.bind(this),20);
         //setTimeout(this.grafDraw.bind(this),20);
-        setTimeout(()=>{ this.grafDraw(); }, 20)
+        requestAnimationFrame(()=>{ this.grafDraw(); });
+        //setTimeout(()=>{ this.grafDraw(); }, 20)
     }
     //
     dtuChanger(){
-        console.log("before:"+plotterModel.t0+", "+plotterModel.t1);
         plotterModel.t0=plotterModel.t0+plotterModel.u;
         plotterModel.t1=plotterModel.t1+plotterModel.u;
-        console.log("after:"+plotterModel.t0+", "+plotterModel.t1);
         setTimeout(()=>{this.dtuChanger(); },plotterModel.dt);
     }
     //graf animation launcher
     launcher(){
-        //console.log("init launcher");
         this.baseInit();
         this.leftGreyDraw();
         //PlotterModel.WS();
