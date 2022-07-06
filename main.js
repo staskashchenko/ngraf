@@ -1,23 +1,26 @@
 import { PlotterModel } from './PlotterModel.js';
 import { View } from './View.js';
 
-const plotterModel=new PlotterModel({});
-plotterModel.WS();
-export { plotterModel };
-const view=new View({});
+const plotterModel = new PlotterModel({});
+plotterModel.startWS();
+
+const view = new View({
+  model: plotterModel
+});
 view.launcher();
+
 //input
 //input T
 /*document.querySelector("#inT").addEventListener("change", (e)=>{
     console.log(e.value);
 });*/
 
-document.forms.inT.onsubmit = function(){
+document.forms.inT.onsubmit = function () {
   var message = this.message.value;
-  if(isNaN(message)==false){
-      plotterModel.T=Number(message);
-      plotterModel.t1=plotterModel.t0+plotterModel.T;
-      console.log(message);
+  if (isNaN(message) == false) {
+    plotterModel.T = Number(message);
+    plotterModel.t1 = plotterModel.t0 + plotterModel.T;
+    console.log(message);
   }
   return false;
 };
@@ -26,29 +29,38 @@ document.forms.inT.onsubmit = function(){
   console.log(e.value);
 });*/
 
-document.forms.indt.onsubmit = function(){
+document.forms.indt.onsubmit = function () {
   var message = this.message.value;
-  if(isNaN(message)==false){
-      plotterModel.dt=Number(message);
-      console.log(message);
+  if (isNaN(message) == false) {
+    plotterModel.dt = Number(message);
+    console.log(message);
   }
   return false;
 };
 //input u
-document.forms.inu.onsubmit = function(){
+document.forms.inu.onsubmit = function () {
   var message = this.message.value;
-  if(isNaN(message)==false){
-      plotterModel.u=Number(message);
-      console.log(message);
+  if (isNaN(message) == false) {
+    plotterModel.u = Number(message);
+    console.log(message);
   }
   return false;
 };
 //input wst
-document.forms.inwst.onsubmit = function(){
+document.forms.inwst.onsubmit = function () {
   var message = this.message.value;
-  if(isNaN(message)==false){
-      plotterModel.wst=Number(message);
-      console.log(message);
+  if (isNaN(message) == false) {
+    plotterModel.wst = Number(message);
+    console.log(message);
+  }
+  return false;
+};
+//input gridStep
+document.forms.ingridStep.onsubmit = function () {
+  var message = this.message.value;
+  if (isNaN(message) == false) {
+    view.gridStep = Number(message);
+    console.log(message);
   }
   return false;
 };
