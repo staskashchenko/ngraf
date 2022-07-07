@@ -1,20 +1,26 @@
 import { PlotterModel } from './PlotterModel.js';
-import { View } from './View.js';
+import { PlotterView } from './PlotterView.js';
+import { MyTimeout } from './MyTimeout.js';
 
 const plotterModel = new PlotterModel({});
 plotterModel.startWS();
 
-const view = new View({
+const plotterView = new PlotterView({
   model: plotterModel
 });
-view.launcher();
+plotterView.launcher();
 
+function testTimeout() {
+  console.log("t");
+}
+
+const mytimeout = new MyTimeout({
+  func: testTimeout,
+  delay: 3000
+})
+mytimeout.timeout();
 //input
 //input T
-/*document.querySelector("#inT").addEventListener("change", (e)=>{
-    console.log(e.value);
-});*/
-
 document.forms.inT.onsubmit = function () {
   var message = this.message.value;
   if (isNaN(message) == false) {
@@ -25,10 +31,6 @@ document.forms.inT.onsubmit = function () {
   return false;
 };
 //input dt
-/*document.querySelector("#indt").addEventListener("change", (e)=>{
-  console.log(e.value);
-});*/
-
 document.forms.indt.onsubmit = function () {
   var message = this.message.value;
   if (isNaN(message) == false) {

@@ -1,39 +1,46 @@
-class View {
+import { MyTimeout } from './MyTimeout.js';
+class PlotterView {
     constructor(params) {
 
         this.model = params.model;
 
         this.gridStep = 1000; //grid step in milliseconds
-        this.dtuTimeoutId;//dtuChanger timeout id
-        this.dtCheckId;//dtcheck timout id
+        this.dtuTimeoutId = new MyTimeout({//dtuChanger timeout id
+            func: this.dtuChanger,
+            delay: this.model.dt
+        });
+        this.dtCheckId = new MyTimeout({//dtcheck timout id
+            func: this.dtCheck,
+            delay: 5
+        });
         this.dtuChangerLever = 1;
         this.pDisIter = 0;//needs for bottomDraw
         this.oi0 = 0;//needs for bottomDraw
         //root el init
-        this.graph = this.getElement('#root');
+        this.graph = PlotterView.getElement('#root');
         //left canvas init
-        this.leftCanvas = this.createElement('leftCanvas');
+        this.leftCanvas = PlotterView.createElement('leftCanvas');
         //size of main div
         this.grafRootDivWidth = 1150;
         this.grafRootDivHeight = 700;
         //root element 
-        this.app = this.getElement('#root');
+        this.app = PlotterView.getElement('#root');
         //graf canvas create
-        this.graf = this.createElement('canvas', 'graf');
+        this.graf = PlotterView.createElement('canvas', 'graf');
         //graf canvas local cords
         this.gcordX = this.graf.width / 1000;
         this.gcordY = this.graf.height / 1000;
         //graf brush init
         this.gctx = this.graf.getContext("2d");
         //left canvas init
-        this.left = this.createElement('canvas', 'left');
+        this.left = PlotterView.createElement('canvas', 'left');
         //left canvas local cords
         this.lcordX = this.left.width / 1000;
         this.lcordY = this.left.height / 1000;
         //left brush init
         this.lctx = this.left.getContext("2d");
         //bottom canvas init
-        this.bottom = this.createElement('canvas', 'bottom');
+        this.bottom = PlotterView.createElement('canvas', 'bottom');
         //bottom canvas local cords
         this.bcordX = this.bottom.width / 1000;
         this.bcordY = this.bottom.height / 1000;
@@ -43,13 +50,13 @@ class View {
     }
 
     //element creation
-    createElement(tag, className) {
+    static createElement(tag, className) {
         const element = document.createElement(tag)
         if (className) element.classList.add(className)
         return element
     }
     //element link geting
-    getElement(selector) {
+    static getElement(selector) {
         const element = document.querySelector(selector)
         return element
     }
@@ -83,7 +90,6 @@ class View {
         var mm = Math.floor((milsecs - hh * 3600000) / 60000);
         var ss = Math.floor((milsecs - hh * 3600000 - mm * 60000) / 1000);
         hh = (hh + 3) % 24;
-        //var ms = milsecs % 1000;
         if (String(hh).length == 1) {
             hh = "0" + hh;
         }
@@ -93,14 +99,6 @@ class View {
         if (String(ss).length == 1) {
             ss = "0" + ss;
         }
-        /*
-        if (String(ms).length == 1) {
-            ms = "0" + ms;
-        }
-        if (String(ms).length == 2) {
-            ms = "0" + ms;
-        }*/
-        //return "[" + hh + ":" + mm + ":" + ss + "." + ms + "]";
         return "[" + hh + ":" + mm + ":" + ss + "]";
     }
     //x cord calculation(needs for x calculation of each point each iteration)
@@ -140,47 +138,14 @@ class View {
         this.bctx.font = "10px Verdana";
         for (let i = 0; i < (this.model.t1 - this.model.t0) / this.gridStep + 2; i++) {
             var gridMilsec = Math.floor(this.model.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
-            console.log(gridMilsec);
             var gridX = (gridMilsec - this.model.t0) * 1000 * this.gcordX / (this.model.t1 - this.model.t0);
             this.gctx.moveTo(gridX, 0);
             this.gctx.lineTo(gridX, 1000 * this.gcordY);
-            console.log(gridX);
             this.bctx.strokeText(this.timeAdapt(gridMilsec), gridX, 60 * this.bcordY);
-            //this.timeAdapt(gridMilsec)
         }
         this.gctx.stroke();
         this.bctx.stroke();
     }
-    /*yLinesDraw() {
-        var i0 = 0;
-        var i1 = 0;
-        for (let i = 0; i < this.model.points.length - 1; i++) {
-
-            let pi = this.model.points[i],
-                piNext = this.model.points[i + 1];
-
-            if ((this.model.t0 >= pi.date) && (this.model.t0 <= piNext.date)) {
-                i0 = i;
-            }
-            if ((this.model.t1 >= pi.date) && (this.model.t1 <= piNext.date)) {
-                i1 = i + 1;
-            } else {
-                i1 = this.model.points.length - 1;
-            }
-        }
-
-        var lx0;
-        this.gctx.beginPath();
-        this.gctx.strokeStyle = "#C0C0C0";
-        this.gctx.lineWidth = 1;
-        for (let i = i0; i < i1; i++) {
-
-            lx0 = (this.model.points[i].date - this.model.t0) * 1000 * this.gcordX / (this.model.t1 - this.model.t0);
-            this.gctx.moveTo(lx0, 1000 * this.gcordY);
-            this.gctx.lineTo(lx0, 0);
-        }
-        this.gctx.stroke();
-    }*/
     //graf line draw
     grafLineDraw() {
         var i0 = 0;
@@ -228,59 +193,6 @@ class View {
         this.lctx.fillText(100, 120.5 * this.lcordX, 23 * this.lcordY);
         this.lctx.stroke();
     }
-    //bottom draw
-    /*bottomDraw() {
-        var i0 = 0;
-        var i1 = 0;
-        for (let i = 0; i < this.model.points.length - 1; i++) {
-
-            let pi = this.model.points[i],
-                piNext = this.model.points[i + 1];
-
-            if ((this.model.t0 >= pi.date) && (this.model.t0 <= piNext.date)) {
-                this.oi0 = i0;
-                i0 = i;
-                if (i0 != this.oi0) {
-                    this.pDisIter++;
-                }
-            }
-            if ((this.model.t1 >= pi.date) && (this.model.t1 <= piNext.date)) {
-                i1 = i + 1;
-            } else {
-                i1 = this.model.points.length - 1;
-            }
-        }
-        var lx0;
-        var oi4txt = 0;
-        var k = 0;
-        this.bctx.beginPath();
-        this.bctx.strokeStyle = "black";
-        this.bctx.textAlign = "center";
-        this.bctx.lineWidth = 2;
-        this.bctx.font = "10px Verdana";
-
-        for (let i = i0; i < i1; i++) {
-            lx0 = this.lxCount(i, this.model.t0, this.model.t1);
-
-            //if((lx0-lxCount(oi4txt,lt0,lt1)>=gcordX*1000/(gcordX*1000/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1))))&&(i%(1000*gcordX/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1)))==0)){
-            if ((lx0 - this.lxCount(oi4txt, this.model.t0, this.model.t1) >= 1000 * this.bcordX / 12.5) && (this.pDisIter * (lx0 - this.lxCount(oi4txt, this.model.t0, this.model.t1) >= 80 * this.bcordX))) {
-                this.bctx.fillText(this.timeAdapt(this.model.points[i].date), lx0, 60 * this.bcordY);
-                oi4txt = i;
-                this.pDisIter = 0;
-                k = 1;
-            }
-            //if(lx0-lxCount(oi4txt,lt0,lt1)/(lxCount(i+1,lt0,lt1)-lxCount(i,lt0,lt1))>=1000/12.5){
-            for (let j = i0; j < i1; j++) {
-                if (k == 1) {
-                    lx0 = this.lxCount(j, this.model.t0, this.model.t1);
-                    this.bctx.fillText(this.timeAdapt(this.model.points[j].date), lx0, 60 * this.bcordY);
-                    oi4txt = j;
-                }
-            }
-            k = 0;
-        }
-        this.bctx.stroke();
-    }*/
     //1 frame draw
     grafDraw() {
         this.gctx.clearRect(0, 0, this.graf.width, this.graf.height);
@@ -296,21 +208,43 @@ class View {
     //dtCheck - check when dt!=0 and launch timeout
     dtCheck() {
         if (this.model.dt != 0) {
-            this.dtuTimeoutId = setTimeout(() => { this.dtuChanger(); }, this.model.dt);
+            this.dtuTimeoutId = new MyTimeout({
+                func: this.dtuChanger.bind(this),
+                delay: this.model.dt
+            })
+            this.dtuTimeoutId.timeout();
+            //this.dtuTimeoutId = setTimeout(() => { this.dtuChanger(); }, this.model.dt);
         }
-        this.dtCheckId = setTimeout(() => { this.dtCheck(); }, 20);
+        this.dtCheckId = new MyTimeout({
+            func: this.dtCheck.bind(this),
+            delay: 5
+        })
+        this.dtCheckId.timeout();
+        //this.dtCheckId = setTimeout(() => { this.dtCheck(); }, 20);
     }
     //changer of t0 and t1 on u every dt milliseconds
     dtuChanger() {
         this.model.t0 = this.model.t0 + this.model.u;
         this.model.t1 = this.model.t1 + this.model.u;
         if (this.model.dt != 0) {
-            this.dtuTimeoutId = setTimeout(() => { this.dtuChanger(); }, this.model.dt);
-            clearTimeout(this.dtCheckId);
+            this.dtuTimeoutId = new MyTimeout({
+                func: this.dtuChanger.bind(this),
+                delay: this.model.dt
+            })
+            this.dtuTimeoutId.timeout();
+            //this.dtuTimeoutId = setTimeout(() => { this.dtuChanger(); }, this.model.dt);
+            this.dtCheckId.isActiv = 0;
+            //clearTimeout(this.dtCheckId);
         }
         if (this.model.dt == 0) {
-            clearTimeout(this.dtuTimeoutId);
-            this.dtCheckId = setTimeout(() => { this.dtCheck(); }, 20);
+            this.dtuTimeoutId.isActiv = 0;
+            //clearTimeout(this.dtuTimeoutId);
+            this.dtCheckId = new MyTimeout({
+                func: this.dtCheck.bind(this),
+                delay: 5
+            })
+            this.dtCheckId.timeout();
+            //this.dtCheckId = setTimeout(() => { this.dtCheck(); }, 20);
         }
     }
     //graf animation launcher
@@ -321,4 +255,4 @@ class View {
         this.grafDraw();
     }
 }
-export { View };
+export { PlotterView };
