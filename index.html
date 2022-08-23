@@ -9,14 +9,15 @@
 
 <body>
   <div id="root"></div>
-  <p style="margin-left: 1237px; position: absolute; top: -15px;">T:</p>
-  <p style="margin-left: 1233px; position: absolute; top: 7px;">dt:</p>
-  <p style="margin-left: 1237px; position: absolute; top: 28px;">u:</p>
-  <p style="margin-left: 1222px; position: absolute; top: 48px;">wst:</p>
-  <p style="margin-left: 1190px; position: absolute; top: 68px;">gridStep:</p>
-  <p style="margin-left: 1233px; position: absolute; top: 88px;">t0:</p>
-  <p style="margin-left: 1233px; position: absolute; top: 110px;">t1:</p>
-  <div id="input" style="width: 400px; margin-left: 1250px; position: absolute; top: 0px;">
+  <p style="margin-left: 1233px; position: absolute; top: -15px;">Peroid(T):</p>
+  <p style="margin-left: 1187px; position: absolute; top: 7px;">Frame peroid(dt):</p>
+  <p style="margin-left: 1178px; position: absolute; top: 28px;">Animation step(u):</p>
+  <p style="margin-left: 1145px; position: absolute; top: 48px;">WebSocket peroid(wst):</p>
+  <p style="margin-left: 1240px; position: absolute; top: 68px;">gridStep:</p>
+  <p style="margin-left: 1199px; position: absolute; top: 88px;">Left border(t0):</p>
+  <p style="margin-left: 1190px; position: absolute; top: 110px;">Right border(t1):</p>
+  <p style="margin-left: 1227px; position: absolute; top: 155px;">Animation:</p>
+  <div id="input" style="width: 400px; margin-left: 1300px; position: absolute; top: 0px;">
     <form name="inT">
       <input id="inT" type="text" name="message" placeholder="input T" value="5000" />
       <input type="submit" value="submit" />
@@ -45,6 +46,8 @@
       <input id="int1" type="text" name="message" placeholder="input t1" />
       <input type="submit" value="submit" />
     </form>
+    <input type="button" id="sett0t1" value="set t0 and t1" />
+    <input type="button" id="animSwich" value="Turn off" style="margin-left: -90px; position: absolute; top: 170px;" />
   </div>
 </body>
 

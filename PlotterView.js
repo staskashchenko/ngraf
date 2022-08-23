@@ -17,8 +17,10 @@ class PlotterView {
         this.T = 5000;  //период между самой левой и самой правой точкой отображается на графе
         this.dt = 20; //время между изменениями периода T
         this.u = 10;  //величина изменения T в миллисекундах каждые dt миллисекунд
+        this.oldu = this.u;//old u
         this.t0 = (new Date()).getTime();
         this.t1 = this.t0 + this.T;//крайние точки графа
+        this.animation = true;
 
         this.dtuChangerLever = 1;
         this.pDisIter = 0;//needs for bottomDraw
@@ -75,7 +77,6 @@ class PlotterView {
     //right way to set t0 with recalculation of t1 or T
     sett0(newt0) {
         this.t0 = newt0;
-        this.u = 0;
         if (this.t1 > this.t0) {
             this.T = this.t1 - this.t0;
         } else if (this.t1 < this.t0) {
@@ -85,12 +86,30 @@ class PlotterView {
     //right way to set t1 with recalculation of t0 or T
     sett1(newt1) {
         this.t1 = newt1;
-        this.u = 0;
         if (this.t1 > this.t0) {
             this.T = this.t1 - this.t0;
         } else if (this.t1 < this.t0) {
             this.t0 = this.t1 - this.T;
         }
+    }
+    //right way to set t0 and t1 with recalculation T
+    sett0t1(newt0, newt1) {
+        if (newt0 < newt1) {
+            this.t0 = newt0;
+            this.t1 = newt1;
+            this.T = newt1 - newt0;
+        }
+    }
+    //stop anim
+    stopAnim() {
+        this.animation = false;
+        this.oldu = this.u;
+        this.u = 0;
+    }
+    //start anim
+    startAnim() {
+        this.animation = true;
+        this.u = this.oldu;
     }
     //init(div and canvases create)
     baseInit() {
