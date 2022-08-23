@@ -7,12 +7,19 @@ class PlotterView {
         this.gridStep = 1000; //grid step in milliseconds
         this.dtuTimeoutId = new MyTimeout({//dtuChanger timeout id
             func: this.dtuChanger,
-            delay: this.model.dt
+            delay: this.dt
         });
         this.dtCheckId = new MyTimeout({//dtcheck timout id
             func: this.dtCheck,
             delay: 5
         });
+
+        this.T = 5000;  //период между самой левой и самой правой точкой отображается на графе
+        this.dt = 20; //время между изменениями периода T
+        this.u = 10;  //величина изменения T в миллисекундах каждые dt миллисекунд
+        this.t0 = (new Date()).getTime();
+        this.t1 = this.t0 + this.T;//крайние точки графа
+
         this.dtuChangerLever = 1;
         this.pDisIter = 0;//needs for bottomDraw
         this.oi0 = 0;//needs for bottomDraw
@@ -60,6 +67,31 @@ class PlotterView {
         const element = document.querySelector(selector)
         return element
     }
+    //right way to set T with recalculation of t0 t1
+    setT(newT) {
+        this.T = newT;
+        this.t1 = this.t0 + this.T;
+    }
+    //right way to set t0 with recalculation of t1 or T
+    sett0(newt0) {
+        this.t0 = newt0;
+        this.u = 0;
+        if (this.t1 > this.t0) {
+            this.T = this.t1 - this.t0;
+        } else if (this.t1 < this.t0) {
+            this.t1 = this.t0 + this.T;
+        }
+    }
+    //right way to set t1 with recalculation of t0 or T
+    sett1(newt1) {
+        this.t1 = newt1;
+        this.u = 0;
+        if (this.t1 > this.t0) {
+            this.T = this.t1 - this.t0;
+        } else if (this.t1 < this.t0) {
+            this.t0 = this.t1 - this.T;
+        }
+    }
     //init(div and canvases create)
     baseInit() {
         document.getElementById('root').style.width = this.grafRootDivWidth + 'px';
@@ -102,9 +134,9 @@ class PlotterView {
         return "[" + hh + ":" + mm + ":" + ss + "]";
     }
     //x cord calculation(needs for x calculation of each point each iteration)
-    lxCount(i) {
-        return (this.model.points[i].date - this.model.t0) * 1000 * this.gcordX / (this.model.t1 - this.model.t0);
-    }
+    /*lxCount(p) {
+        return (this.model.points[i].date - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
+    }*/
     //draw(x and y basis lines draw)
     basisDraw() {
         this.gctx.beginPath();
@@ -136,9 +168,9 @@ class PlotterView {
         this.bctx.textAlign = "center";
         this.bctx.lineWidth = 1;
         this.bctx.font = "10px Verdana";
-        for (let i = 0; i < (this.model.t1 - this.model.t0) / this.gridStep + 2; i++) {
-            var gridMilsec = Math.floor(this.model.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
-            var gridX = (gridMilsec - this.model.t0) * 1000 * this.gcordX / (this.model.t1 - this.model.t0);
+        for (let i = 0; i < (this.t1 - this.t0) / this.gridStep + 2; i++) {
+            var gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
+            var gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
             this.gctx.moveTo(gridX, 0);
             this.gctx.lineTo(gridX, 1000 * this.gcordY);
             this.bctx.strokeText(this.timeAdapt(gridMilsec), gridX, 60 * this.bcordY);
@@ -151,10 +183,10 @@ class PlotterView {
         var i0 = 0;
         var i1 = 0;
         for (let i = 0; i < this.model.points.length - 1; i++) {
-            if ((this.model.t0 >= this.model.points[i].date) && (this.model.t0 <= this.model.points[i + 1].date)) {
+            if ((this.t0 >= this.model.points[i].date) && (this.t0 <= this.model.points[i + 1].date)) {
                 i0 = i;
             }
-            if ((this.model.t1 >= this.model.points[i].date) && (this.model.t1 <= this.model.points[i + 1].date)) {
+            if ((this.t1 >= this.model.points[i].date) && (this.t1 <= this.model.points[i + 1].date)) {
                 i1 = i + 1;
             } else {
                 i1 = this.model.points.length - 1;
@@ -169,9 +201,9 @@ class PlotterView {
         this.gctx.lineWidth = 2;
         this.gctx.font = "15px Verdana";
         for (let i = i0; i < i1; i++) {
-            lx0 = (this.model.points[i].date - this.model.t0) * 1000 * this.gcordX / (this.model.t1 - this.model.t0);
+            lx0 = (this.model.points[i].date - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
             lY0 = (1000 - 10 * this.model.points[i].value) * this.gcordY;
-            lx1 = (this.model.points[i + 1].date - this.model.t0) * 1000 * this.gcordX / (this.model.t1 - this.model.t0);
+            lx1 = (this.model.points[i + 1].date - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
             lY1 = (1000 - 10 * this.model.points[i + 1].value) * this.gcordY;
             this.gctx.strokeText("[ " + this.model.points[i].value + " ]", lx0, lY0);
             this.gctx.moveTo(lx0, lY0);
@@ -181,7 +213,6 @@ class PlotterView {
     }
     //left draw
     leftGreyDraw() {
-        this.lctx.beginPath();
         this.lctx.beginPath();
         this.lctx.strokeStyle = "black";
         this.lctx.lineWidth = 2;
@@ -207,13 +238,13 @@ class PlotterView {
     }
     //dtCheck - check when dt!=0 and launch timeout
     dtCheck() {
-        if (this.model.dt != 0) {
+        if (this.dt != 0) {
             this.dtuTimeoutId = new MyTimeout({
                 func: this.dtuChanger.bind(this),
-                delay: this.model.dt
+                delay: this.dt
             })
             this.dtuTimeoutId.timeout();
-            //this.dtuTimeoutId = setTimeout(() => { this.dtuChanger(); }, this.model.dt);
+            //this.dtuTimeoutId = setTimeout(() => { this.dtuChanger(); }, this.dt);
         }
         this.dtCheckId = new MyTimeout({
             func: this.dtCheck.bind(this),
@@ -224,19 +255,19 @@ class PlotterView {
     }
     //changer of t0 and t1 on u every dt milliseconds
     dtuChanger() {
-        this.model.t0 = this.model.t0 + this.model.u;
-        this.model.t1 = this.model.t1 + this.model.u;
-        if (this.model.dt != 0) {
+        this.t0 = this.t0 + this.u;
+        this.t1 = this.t1 + this.u;
+        if (this.dt != 0) {
             this.dtuTimeoutId = new MyTimeout({
                 func: this.dtuChanger.bind(this),
-                delay: this.model.dt
+                delay: this.dt
             })
             this.dtuTimeoutId.timeout();
-            //this.dtuTimeoutId = setTimeout(() => { this.dtuChanger(); }, this.model.dt);
+            //this.dtuTimeoutId = setTimeout(() => { this.dtuChanger(); }, this.dt);
             this.dtCheckId.isActiv = 0;
             //clearTimeout(this.dtCheckId);
         }
-        if (this.model.dt == 0) {
+        if (this.dt == 0) {
             this.dtuTimeoutId.isActiv = 0;
             //clearTimeout(this.dtuTimeoutId);
             this.dtCheckId = new MyTimeout({
