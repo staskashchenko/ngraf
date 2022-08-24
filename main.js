@@ -132,7 +132,7 @@ document.getElementById("wsSwich").onclick = function () {
 /*
 var testt0 = new Date();
 var testt1 = new Date();
-document.addEventListener('keypress', function (event) {
+document.addEventListener('keydown', function (event) {
   console.log('Key: ', event.key);
   console.log('keyCode: ', event.keyCode);
   testt0 = testt1;
@@ -148,6 +148,15 @@ document.forms.inscrollsize.onsubmit = function () {
   }
   return false;
 };
+//input key step
+document.forms.inkeyStep.onsubmit = function () {
+  var message = this.message.value;
+  if (isNaN(message) == false) {
+    plotterView.keyStep = Number(message);
+  }
+  return false;
+};
+
 
 
 export { plotterModel };

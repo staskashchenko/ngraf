@@ -27,6 +27,7 @@ class PlotterView {
         this.oldanimation = this.animation;
         this.mousecount = 0;//4 test
         this.scrollSize = 200;//default scroll size
+        this.keyStep = 30;//default key step
         this.grafOver = false; //is mouse over graf canvas
         this.grafMouseX0;//mouse X over graf before
         this.grafMouseX1;//mouse X over graf now
@@ -343,7 +344,7 @@ class PlotterView {
                 console.log("left down");
                 _this.leftPressed = true;
                 _this.oldu = _this.u;
-                _this.u = -2 * _this.u;
+                _this.u = -1 * _this.keyStep;
                 _this.oldanimation = _this.animation;
                 _this.animation = true;
                 _this.olddt = _this.dt;
@@ -353,7 +354,7 @@ class PlotterView {
                 console.log("right down");
                 _this.rightPressed = true;
                 _this.oldu = _this.u;
-                _this.u = 2 * _this.u;
+                _this.u = _this.keyStep;
                 _this.oldanimation = _this.animation;
                 _this.animation = true;
                 _this.olddt = _this.dt;
