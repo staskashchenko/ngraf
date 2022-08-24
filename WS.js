@@ -8,6 +8,7 @@ class WS {
     constructor() {
         this._wstTimeoutId;//wst timeout id
         this._wst = 200; //величина промежутка времени между поступлением времени
+        this.active = false;
         this.onreceive = null;
     }
     //random int generator for graf testing
@@ -37,14 +38,20 @@ class WS {
         this.start();
     }
 
-    //fake ws
+    //start ws
     start() {
+        this.active = true;
         clearInterval(this._wstTimeoutId);
         this._wstTimeoutId = setInterval(() => {
             this._dispatchPoi();
         },
             this.wst
         );
+    }
+    //stop ws
+    stop() {
+        this.active = false;
+        clearInterval(this._wstTimeoutId);
     }
 }
 

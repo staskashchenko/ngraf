@@ -13,14 +13,24 @@ class PlotterView {
             func: this.dtCheck,
             delay: 5
         });
+        this.leftPressed = false;
+        this.rightPressed = false;
 
         this.T = 5000;  //период между самой левой и самой правой точкой отображается на графе
-        this.dt = 20; //время между изменениями периода T
+        this.dt = 5; //время между изменениями периода T
+        this.olddt = this.dt;//old dt
         this.u = 10;  //величина изменения T в миллисекундах каждые dt миллисекунд
         this.oldu = this.u;//old u
         this.t0 = (new Date()).getTime();
         this.t1 = this.t0 + this.T;//крайние точки графа
         this.animation = true;
+        this.oldanimation = this.animation;
+        this.mousecount = 0;//4 test
+        this.scrollSize = 200;//default scroll size
+        this.grafOver = false; //is mouse over graf canvas
+        this.grafMouseX0;//mouse X over graf before
+        this.grafMouseX1;//mouse X over graf now
+        this.mouseDown = false;//mouse down
 
         this.dtuChangerLever = 1;
         this.pDisIter = 0;//needs for bottomDraw
@@ -103,13 +113,10 @@ class PlotterView {
     //stop anim
     stopAnim() {
         this.animation = false;
-        this.oldu = this.u;
-        this.u = 0;
     }
     //start anim
     startAnim() {
         this.animation = true;
-        this.u = this.oldu;
     }
     //init(div and canvases create)
     baseInit() {
@@ -274,8 +281,10 @@ class PlotterView {
     }
     //changer of t0 and t1 on u every dt milliseconds
     dtuChanger() {
-        this.t0 = this.t0 + this.u;
-        this.t1 = this.t1 + this.u;
+        if (this.animation == true) {
+            this.t0 = this.t0 + this.u;
+            this.t1 = this.t1 + this.u;
+        }
         if (this.dt != 0) {
             this.dtuTimeoutId = new MyTimeout({
                 func: this.dtuChanger.bind(this),
@@ -297,12 +306,121 @@ class PlotterView {
             //this.dtCheckId = setTimeout(() => { this.dtCheck(); }, 20);
         }
     }
+    //left key press
+    leftKeyPress() {
+        this.t0 = this.t0 - this.u;
+        this.t1 = this.t1 - this.u;
+    }
+    //right key press
+    rightKeyPress() {
+        this.t0 = this.t0 + this.u;
+        this.t1 = this.t1 + this.u;
+    }
+    //keys control
+    controlInit() {
+        //add key speed
+        //keydown start request animation frame
+        //key up return it in previus speed with this speed
+        /*document.addEventListener('keypress', function (event) {
+            console.log('Key: ', event.key);
+            console.log('keyCode: ', event.keyCode);
+        });*/
+
+        let _this = this;
+
+        document.getElementById("graf").addEventListener('mouseover', function (event) {
+            console.log("over");
+            _this.grafOver = true;
+        })
+        document.getElementById("graf").addEventListener('mouseout', function (event) {
+            console.log("out");
+            _this.grafOver = false;
+        })
+
+        document.addEventListener('keydown', function (event) {
+
+            if ((event.keyCode == 37) && (_this.leftPressed == false) && (_this.grafOver == true)) {
+                console.log("left down");
+                _this.leftPressed = true;
+                _this.oldu = _this.u;
+                _this.u = -2 * _this.u;
+                _this.oldanimation = _this.animation;
+                _this.animation = true;
+                _this.olddt = _this.dt;
+                _this.dt = 5;
+            }
+            if ((event.keyCode == 39) && (_this.rightPressed == false) && (_this.grafOver == true)) {
+                console.log("right down");
+                _this.rightPressed = true;
+                _this.oldu = _this.u;
+                _this.u = 2 * _this.u;
+                _this.oldanimation = _this.animation;
+                _this.animation = true;
+                _this.olddt = _this.dt;
+                _this.dt = 5;
+            }
+        });
+        document.addEventListener('keyup', function (event) {
+            if ((event.keyCode == 37) && (_this.leftPressed == true)) {
+                console.log("left up");
+                _this.leftPressed = false;
+                _this.u = _this.oldu;
+                _this.animation = _this.oldanimation;
+                _this.dt = _this.olddt;
+            }
+            if ((event.keyCode == 39) && (_this.rightPressed == true)) {
+                console.log("right up");
+                _this.rightPressed = false;
+                _this.u = _this.oldu;
+                _this.animation = _this.oldanimation;
+                _this.dt = _this.olddt;
+            }
+        });
+        document.getElementById("graf").addEventListener('wheel', (event) => {
+            event.preventDefault();
+            console.log(event);
+            _this.mousecount++;
+            console.log(_this.mousecount);
+            let leftStep = _this.grafMouseX1 / document.getElementById('graf').width * 2 * _this.scrollSize;
+            let rightStep = (document.getElementById('graf').width - _this.grafMouseX1) / document.getElementById('graf').width * 2 * _this.scrollSize;;
+            //see more
+            if (event.deltaY > 0) {
+                _this.t0 = _this.t0 - leftStep;
+                _this.t1 = _this.t1 + rightStep;
+            } else if (event.deltaY < 0) {
+                _this.t0 = _this.t0 + leftStep;
+                _this.t1 = _this.t1 - rightStep;
+            }
+        });
+        document.getElementById("graf").addEventListener('mousemove', (event) => {
+            console.log(event.offsetX);
+            _this.grafMouseX0 = _this.grafMouseX1;
+            _this.grafMouseX1 = event.offsetX;
+            if (_this.mouseDown == true) {
+                let deltaOffset = (_this.grafMouseX1 - _this.grafMouseX0) * (_this.t1 - _this.t0) / document.getElementById('graf').width;
+                _this.t0 = _this.t0 - deltaOffset;
+                _this.t1 = _this.t1 - deltaOffset;
+            }
+
+
+        })
+        document.addEventListener('mousedown', (event) => {
+            console.log(event.keyCode);
+            _this.mouseDown = true;
+        })
+        document.addEventListener('mouseup', (event) => {
+            console.log(event.keyCode);
+            _this.mouseDown = false;
+        })
+    }
+
     //graf animation launcher
     launcher() {
         this.baseInit();
         this.leftGreyDraw();
         this.dtuChanger();
         this.grafDraw();
+        this.controlInit();
     }
 }
 export { PlotterView };

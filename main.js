@@ -115,5 +115,39 @@ document.getElementById("animSwich").onclick = function () {
   }
 
 }
+//wsSwich
+document.getElementById("wsSwich").onclick = function () {
+  if (plotterModel.ws.active == true) {
+    document.getElementById("wsSwich").value = "Turn on";
+    plotterModel.ws.stop();
+    console.log("ws.active=false");
+  } else if (plotterModel.ws.active == false) {
+    document.getElementById("wsSwich").value = "Turn off";
+    plotterModel.ws.start();
+    console.log("ws.active=true");
+  }
+
+}
+//just 4 test
+/*
+var testt0 = new Date();
+var testt1 = new Date();
+document.addEventListener('keypress', function (event) {
+  console.log('Key: ', event.key);
+  console.log('keyCode: ', event.keyCode);
+  testt0 = testt1;
+  testt1 = new Date();
+  console.log('Brake: ', Number(testt1) - Number(testt0))
+});*/
+//input t1
+//input scroll step
+document.forms.inscrollsize.onsubmit = function () {
+  var message = this.message.value;
+  if (isNaN(message) == false) {
+    plotterView.scrollSize = Number(message);
+  }
+  return false;
+};
+
 
 export { plotterModel };
