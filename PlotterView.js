@@ -3,74 +3,62 @@ class PlotterView {
     constructor(params) {
 
         this.model = params.model;
+        this.oPointsLength = this.model.points.length;
+        this.baseGridPoint = null;
 
         this.gridStep = 1000; //grid step in milliseconds
-        /*this.dtuTimeoutId = new MyTimeout({//dtuChanger timeout id
-            func: this.dtuChanger,
-            delay: this.dt
-        });
-        this.dtCheckId = new MyTimeout({//dtcheck timout id
-            func: this.dtCheck,
-            delay: 5
-        });*/
         this.leftPressed = false;
         this.rightPressed = false;
 
-        this.T = 5000;  //период между самой левой и самой правой точкой отображается на графе
+        this.T = 5000;  //period between t0 & t1
 
-        this.olddt = this.dt;//old dt need 4 key animation
-        this.u = 10;  //величина изменения T в миллисекундах каждые dt миллисекунд
+        this.olddt = this.dt;//old dt (need 4 key animation)
+        this.u = 10;  //delta value of changing t0 and t1 every dt
         this.oldu = this.u;//old u
-        this.t0 = (new Date()).getTime();
-        this.t1 = this.t0 + this.T;//крайние точки графа
-        this.animation = true;
-        this.dt = 5; //время между изменениями периода T
-        this.oldanimation = this.animation;
-        this.mousecount = 0;//4 test
-        this.scrollSize = 200;//default scroll size
-        this.keyStep = 30;//default key step
+        this.t0 = (new Date()).getTime(); //left visible border of the grafic
+        this.t1 = this.t0 + this.T;//right visible border of the grafic
+        this.animation = true;//animation trigger
+        this.needFrame = true;//is new frame needed
+        this.clasterBorder = 18;//maximum number of points before clasterisation
+        this.dt = 5; //period between frames
+        this.oldanimation = this.animation;//old animation trigger(need 4 keys control)
+        this.scrollSize = 400;//scroll size(how much milliseconds will be zoomed in 1 wheel step)
+        this.keyStep = 30;//default key step(how much milliseconds will be scrolled in 1 keyhold step)
         this.grafOver = false; //is mouse over graf canvas
         this.grafMouseX0;//mouse X over graf before
         this.grafMouseX1;//mouse X over graf now
-        this.mouseDown = false;//mouse down
-        this.uTimer = new MyTimer({
+        this.mouseDown = false;//is mouse down
+        this.uTimer = new MyTimer({//timer 4 frames animation
             func: this.dtuChanger.bind(this),
             delay: this.dt
         })
 
-        this.dtuChangerLever = 1;
-        this.pDisIter = 0;//needs for bottomDraw
-        this.oi0 = 0;//needs for bottomDraw
-        //root el init
-        this.graph = PlotterView.getElement('#root');
-        //left canvas init
-        this.leftCanvas = PlotterView.createElement('leftCanvas');
+        this.graph = PlotterView.getElement('#root');//root el init
+        this.leftCanvas = PlotterView.createElement('leftCanvas');//left canvas init
+
         //size of main div
         this.grafRootDivWidth = 1150;
         this.grafRootDivHeight = 700;
-        //root element 
-        this.app = PlotterView.getElement('#root');
-        //graf canvas create
-        this.graf = PlotterView.createElement('canvas', 'graf');
+
+        this.app = PlotterView.getElement('#root');//root element 
+        this.graf = PlotterView.createElement('canvas', 'graf');//graf canvas create
         //graf canvas local cords
         this.gcordX = this.graf.width / 1000;
         this.gcordY = this.graf.height / 1000;
-        //graf brush init
-        this.gctx = this.graf.getContext("2d");
-        //left canvas init
-        this.left = PlotterView.createElement('canvas', 'left');
+
+        this.gctx = this.graf.getContext("2d");//graf brush init
+        this.left = PlotterView.createElement('canvas', 'left');//left canvas init
         //left canvas local cords
         this.lcordX = this.left.width / 1000;
         this.lcordY = this.left.height / 1000;
-        //left brush init
-        this.lctx = this.left.getContext("2d");
-        //bottom canvas init
-        this.bottom = PlotterView.createElement('canvas', 'bottom');
+
+        this.lctx = this.left.getContext("2d");//left brush init
+        this.bottom = PlotterView.createElement('canvas', 'bottom');//bottom canvas init
         //bottom canvas local cords
         this.bcordX = this.bottom.width / 1000;
         this.bcordY = this.bottom.height / 1000;
-        //bottom brush init
-        this.bctx = this.bottom.getContext("2d");
+
+        this.bctx = this.bottom.getContext("2d");//bottom brush init
 
     }
 
@@ -87,11 +75,13 @@ class PlotterView {
     }
     //right way to set T with recalculation of t0 t1
     setT(newT) {
+        this.needFrame = true;
         this.T = newT;
         this.t1 = this.t0 + this.T;
     }
     //right way to set t0 with recalculation of t1 or T
     sett0(newt0) {
+        this.needFrame = true;
         this.t0 = newt0;
         if (this.t1 > this.t0) {
             this.T = this.t1 - this.t0;
@@ -101,6 +91,7 @@ class PlotterView {
     }
     //right way to set t1 with recalculation of t0 or T
     sett1(newt1) {
+        this.needFrame = true;
         this.t1 = newt1;
         if (this.t1 > this.t0) {
             this.T = this.t1 - this.t0;
@@ -111,6 +102,7 @@ class PlotterView {
     //right way to set t0 and t1 with recalculation T
     sett0t1(newt0, newt1) {
         if (newt0 < newt1) {
+            this.needFrame = true;
             this.t0 = newt0;
             this.t1 = newt1;
             this.T = newt1 - newt0;
@@ -195,19 +187,41 @@ class PlotterView {
         this.gctx.beginPath();
         this.gctx.strokeStyle = "#C0C0C0";
         this.gctx.lineWidth = 1;
+        var gridMilsec;
+        var gridX;
+        for (let i = 0; i < (this.t1 - this.t0) / this.gridStep + 2; i++) {
+            gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
+            gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
+            this.gctx.moveTo(gridX, 0);
+            this.gctx.lineTo(gridX, 1000 * this.gcordY);
+        }
+        this.gctx.stroke();
         this.bctx.beginPath();
         this.bctx.strokeStyle = "black";
         this.bctx.textAlign = "center";
         this.bctx.lineWidth = 1;
         this.bctx.font = "10px Verdana";
         for (let i = 0; i < (this.t1 - this.t0) / this.gridStep + 2; i++) {
+            gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
+            if (this.baseGridPoint == null) {
+                this.baseGridPoint = gridMilsec;
+            }
+            gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
+            let skipI = Math.floor((this.t1 - this.t0) / (this.gridStep * this.clasterBorder));
             var gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
             var gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
-            this.gctx.moveTo(gridX, 0);
-            this.gctx.lineTo(gridX, 1000 * this.gcordY);
-            this.bctx.strokeText(this.timeAdapt(gridMilsec), gridX, 60 * this.bcordY);
+            if (skipI > 0) {
+                if (gridMilsec % ((skipI + 1) * this.gridStep) == this.baseGridPoint % ((skipI + 1) * this.gridStep)) {
+                    this.bctx.strokeText(this.timeAdapt(gridMilsec), gridX, 60 * this.bcordY);
+                    i += skipI;
+                }
+            } else {
+                this.bctx.strokeText(this.timeAdapt(gridMilsec), gridX, 60 * this.bcordY);
+            }
+
+
+            this.bctx.stroke();
         }
-        this.gctx.stroke();
         this.bctx.stroke();
     }
     //graf line draw
@@ -256,91 +270,75 @@ class PlotterView {
         this.lctx.fillText(100, 120.5 * this.lcordX, 23 * this.lcordY);
         this.lctx.stroke();
     }
-    //1 frame draw
-    grafDraw() {
+    //cleans the frame
+    cleanFrame() {
         this.gctx.clearRect(0, 0, this.graf.width, this.graf.height);
-        this.xLinesDraw();
         this.bctx.clearRect(0, 0, this.bottom.width, this.bottom.height);
-        this.yGridDraw();
-        //this.yLinesDraw();
-        this.grafLineDraw();
-        this.basisDraw();
-        //this.bottomDraw();
-        requestAnimationFrame(() => { this.grafDraw(); });
     }
-    //dtCheck - check when dt!=0 and launch timeout
-    /*dtCheck() {
-        if (this.dt != 0) {
-            this.dtuTimeoutId = new MyTimeout({
-                func: this.dtuChanger.bind(this),
-                delay: this.dt
-            })
-            this.dtuTimeoutId.timeout();
-            //this.dtuTimeoutId = setTimeout(() => { this.dtuChanger(); }, this.dt);
+    //checks is there a new point in the model since last frame
+    isNewPoint() {
+        if (this.model.points.length > 0) {
+            if ((this.oPointsLength < this.model.points.length) && (Number(this.model.points[this.model.points.length - 2].date) < this.t1)) {
+                this.oPointsLength = this.model.points.length;
+                this.needFrame = true;
+            }
         }
-        this.dtCheckId = new MyTimeout({
-            func: this.dtCheck.bind(this),
-            delay: 5
-        })
-        this.dtCheckId.timeout();
-        //this.dtCheckId = setTimeout(() => { this.dtCheck(); }, 20);
-    }*/
+    }
+    //1 frame draw
+    frame() {
+
+        this.isNewPoint();
+        if (this.needFrame == true) {
+            console.log("new frame");
+            this.cleanFrame()
+            this.xLinesDraw();
+            this.yGridDraw();
+            //this.yLinesDraw();
+            this.grafLineDraw();
+            this.basisDraw();
+            //this.bottomDraw();
+            this.needFrame = false;
+        }
+        requestAnimationFrame(() => { this.frame(); });
+    }
     //changer of t0 and t1 on u every dt milliseconds
     dtuChanger() {
-        console.log("dtuC0");
         if ((this.animation == true) && (this.dt > 0)) {
-            console.log("dtuC1");
+            this.needFrame = true;
             this.t0 = this.t0 + this.u;
             this.t1 = this.t1 + this.u;
             this.uTimer.delay = this.dt;
-            //this.uTimer.launch();
         } else if (this.dt == 0) {
             this.uTimer.delay = 10;
-            //this.uTimer.launch();
-            /*delete this.dtuTimeoutId;
-            this.dtuTimeoutId = new MyTimeout({
-                func: this.dtuChanger.bind(this),
-                delay: 5
-            })
-            this.dtuTimeoutId.timer();*/
         }
-
     }
     //left key press
     leftKeyPress() {
+        this.needFrame = true;
         this.t0 = this.t0 - this.u;
         this.t1 = this.t1 - this.u;
     }
     //right key press
     rightKeyPress() {
+        this.needFrame = true;
         this.t0 = this.t0 + this.u;
         this.t1 = this.t1 + this.u;
     }
     //keys control
     controlInit() {
-        //add key speed
-        //keydown start request animation frame
-        //key up return it in previus speed with this speed
-        /*document.addEventListener('keypress', function (event) {
-            console.log('Key: ', event.key);
-            console.log('keyCode: ', event.keyCode);
-        });*/
-
         let _this = this;
 
         document.getElementById("graf").addEventListener('mouseover', function (event) {
-            console.log("over");
             _this.grafOver = true;
         })
         document.getElementById("graf").addEventListener('mouseout', function (event) {
-            console.log("out");
             _this.grafOver = false;
         })
 
         document.addEventListener('keydown', function (event) {
 
             if ((event.keyCode == 37) && (_this.leftPressed == false) && (_this.grafOver == true)) {
-                console.log("left down");
+                this.needFrame = true;
                 _this.leftPressed = true;
                 _this.oldu = _this.u;
                 _this.u = -1 * _this.keyStep;
@@ -350,7 +348,7 @@ class PlotterView {
                 _this.dt = 5;
             }
             if ((event.keyCode == 39) && (_this.rightPressed == false) && (_this.grafOver == true)) {
-                console.log("right down");
+                this.needFrame = true;
                 _this.rightPressed = true;
                 _this.oldu = _this.u;
                 _this.u = _this.keyStep;
@@ -362,14 +360,14 @@ class PlotterView {
         });
         document.addEventListener('keyup', function (event) {
             if ((event.keyCode == 37) && (_this.leftPressed == true)) {
-                console.log("left up");
+                this.needFrame = true;
                 _this.leftPressed = false;
                 _this.u = _this.oldu;
                 _this.animation = _this.oldanimation;
                 _this.dt = _this.olddt;
             }
             if ((event.keyCode == 39) && (_this.rightPressed == true)) {
-                console.log("right up");
+                this.needFrame = true;
                 _this.rightPressed = false;
                 _this.u = _this.oldu;
                 _this.animation = _this.oldanimation;
@@ -378,25 +376,24 @@ class PlotterView {
         });
         document.getElementById("graf").addEventListener('wheel', (event) => {
             event.preventDefault();
-            console.log(event);
-            _this.mousecount++;
-            console.log(_this.mousecount);
-            let leftStep = _this.grafMouseX1 / document.getElementById('graf').width * 2 * _this.scrollSize;
-            let rightStep = (document.getElementById('graf').width - _this.grafMouseX1) / document.getElementById('graf').width * 2 * _this.scrollSize;;
+            let leftStep = _this.grafMouseX1 / document.getElementById('graf').width * _this.scrollSize;
+            let rightStep = (document.getElementById('graf').width - _this.grafMouseX1) / document.getElementById('graf').width * _this.scrollSize;;
             //see more
             if (event.deltaY > 0) {
+                this.needFrame = true;
                 _this.t0 = _this.t0 - leftStep;
                 _this.t1 = _this.t1 + rightStep;
             } else if (event.deltaY < 0) {
+                this.needFrame = true;
                 _this.t0 = _this.t0 + leftStep;
                 _this.t1 = _this.t1 - rightStep;
             }
         });
         document.getElementById("graf").addEventListener('mousemove', (event) => {
-            console.log(event.offsetX);
             _this.grafMouseX0 = _this.grafMouseX1;
             _this.grafMouseX1 = event.offsetX;
             if (_this.mouseDown == true) {
+                this.needFrame = true;
                 let deltaOffset = (_this.grafMouseX1 - _this.grafMouseX0) * (_this.t1 - _this.t0) / document.getElementById('graf').width;
                 _this.t0 = _this.t0 - deltaOffset;
                 _this.t1 = _this.t1 - deltaOffset;
@@ -405,11 +402,9 @@ class PlotterView {
 
         })
         document.addEventListener('mousedown', (event) => {
-            console.log(event.keyCode);
             _this.mouseDown = true;
         })
         document.addEventListener('mouseup', (event) => {
-            console.log(event.keyCode);
             _this.mouseDown = false;
         })
     }
@@ -419,9 +414,8 @@ class PlotterView {
         this.baseInit();
         this.leftGreyDraw();
         this.dtuChanger();
-        //this.dtuTimeoutId.timer();
         this.uTimer.launch();
-        this.grafDraw();
+        this.frame();
         this.controlInit();
     }
 }

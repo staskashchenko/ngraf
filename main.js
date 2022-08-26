@@ -1,8 +1,6 @@
 import { PlotterModel } from './PlotterModel.js';
 import { PlotterView } from './PlotterView.js';
 
-import { MyTimer } from './MyTimer.js'; //only 4 test
-
 const plotterModel = new PlotterModel({});
 plotterModel.ws.start();
 
@@ -146,14 +144,5 @@ document.forms.inkeyStep.onsubmit = function () {
   }
   return false;
 };
-/*function test() {
-  console.log();
-}
 
-let testTimer = new MyTimer({
-  func: test,
-  delay: 100
-})
-testTimer.launch();
-*/
 export { plotterModel };
