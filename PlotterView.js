@@ -277,7 +277,7 @@ class PlotterView {
     }
     //checks is there a new point in the model since last frame
     isNewPoint() {
-        if (this.model.points.length > 0) {
+        if (this.model.points.length > 1) {
             if ((this.oPointsLength < this.model.points.length) && (Number(this.model.points[this.model.points.length - 2].date) < this.t1)) {
                 this.oPointsLength = this.model.points.length;
                 this.needFrame = true;
