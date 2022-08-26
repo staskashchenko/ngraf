@@ -1,15 +1,11 @@
 import { Point } from './Point.js';
 
-/*ws = new WS();
-ws.onreceive = (p) => { console.log(p) };
-ws.start()*/
-
 class WS {
     constructor() {
         this._wstTimeoutId;//wst timeout id
-        this._wst = 200; //величина промежутка времени между поступлением времени
-        this.active = false;
-        this.onreceive = null;
+        this._wst = 200; //websocket period
+        this.active = false; //is WS active
+        this.onreceive = null;//push new points to model
     }
     //random int generator for graf testing
     _getRandomInt(max) {
@@ -28,11 +24,11 @@ class WS {
             this.onreceive(this._genPoint());
         }
     }
-
+    //get websocket period
     get wst() {
         return this._wst;
     }
-
+    //set websocket period
     set wst(val) {
         this._wst = val;
         this.start();

@@ -1,29 +1,30 @@
-import { MyTimeout } from './MyTimeout.js';
+import { MyTimer } from './MyTimer.js'
 class PlotterView {
     constructor(params) {
 
         this.model = params.model;
 
         this.gridStep = 1000; //grid step in milliseconds
-        this.dtuTimeoutId = new MyTimeout({//dtuChanger timeout id
+        /*this.dtuTimeoutId = new MyTimeout({//dtuChanger timeout id
             func: this.dtuChanger,
             delay: this.dt
         });
         this.dtCheckId = new MyTimeout({//dtcheck timout id
             func: this.dtCheck,
             delay: 5
-        });
+        });*/
         this.leftPressed = false;
         this.rightPressed = false;
 
         this.T = 5000;  //период между самой левой и самой правой точкой отображается на графе
-        this.dt = 5; //время между изменениями периода T
-        this.olddt = this.dt;//old dt
+
+        this.olddt = this.dt;//old dt need 4 key animation
         this.u = 10;  //величина изменения T в миллисекундах каждые dt миллисекунд
         this.oldu = this.u;//old u
         this.t0 = (new Date()).getTime();
         this.t1 = this.t0 + this.T;//крайние точки графа
         this.animation = true;
+        this.dt = 5; //время между изменениями периода T
         this.oldanimation = this.animation;
         this.mousecount = 0;//4 test
         this.scrollSize = 200;//default scroll size
@@ -32,6 +33,10 @@ class PlotterView {
         this.grafMouseX0;//mouse X over graf before
         this.grafMouseX1;//mouse X over graf now
         this.mouseDown = false;//mouse down
+        this.uTimer = new MyTimer({
+            func: this.dtuChanger.bind(this),
+            delay: this.dt
+        })
 
         this.dtuChangerLever = 1;
         this.pDisIter = 0;//needs for bottomDraw
@@ -264,7 +269,7 @@ class PlotterView {
         requestAnimationFrame(() => { this.grafDraw(); });
     }
     //dtCheck - check when dt!=0 and launch timeout
-    dtCheck() {
+    /*dtCheck() {
         if (this.dt != 0) {
             this.dtuTimeoutId = new MyTimeout({
                 func: this.dtuChanger.bind(this),
@@ -279,33 +284,27 @@ class PlotterView {
         })
         this.dtCheckId.timeout();
         //this.dtCheckId = setTimeout(() => { this.dtCheck(); }, 20);
-    }
+    }*/
     //changer of t0 and t1 on u every dt milliseconds
     dtuChanger() {
-        if (this.animation == true) {
+        console.log("dtuC0");
+        if ((this.animation == true) && (this.dt > 0)) {
+            console.log("dtuC1");
             this.t0 = this.t0 + this.u;
             this.t1 = this.t1 + this.u;
-        }
-        if (this.dt != 0) {
+            this.uTimer.delay = this.dt;
+            //this.uTimer.launch();
+        } else if (this.dt == 0) {
+            this.uTimer.delay = 10;
+            //this.uTimer.launch();
+            /*delete this.dtuTimeoutId;
             this.dtuTimeoutId = new MyTimeout({
                 func: this.dtuChanger.bind(this),
-                delay: this.dt
-            })
-            this.dtuTimeoutId.timeout();
-            //this.dtuTimeoutId = setTimeout(() => { this.dtuChanger(); }, this.dt);
-            this.dtCheckId.isActiv = 0;
-            //clearTimeout(this.dtCheckId);
-        }
-        if (this.dt == 0) {
-            this.dtuTimeoutId.isActiv = 0;
-            //clearTimeout(this.dtuTimeoutId);
-            this.dtCheckId = new MyTimeout({
-                func: this.dtCheck.bind(this),
                 delay: 5
             })
-            this.dtCheckId.timeout();
-            //this.dtCheckId = setTimeout(() => { this.dtCheck(); }, 20);
+            this.dtuTimeoutId.timer();*/
         }
+
     }
     //left key press
     leftKeyPress() {
@@ -420,6 +419,8 @@ class PlotterView {
         this.baseInit();
         this.leftGreyDraw();
         this.dtuChanger();
+        //this.dtuTimeoutId.timer();
+        this.uTimer.launch();
         this.grafDraw();
         this.controlInit();
     }

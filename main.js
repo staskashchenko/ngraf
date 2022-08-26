@@ -1,6 +1,8 @@
 import { PlotterModel } from './PlotterModel.js';
 import { PlotterView } from './PlotterView.js';
 
+import { MyTimer } from './MyTimer.js'; //only 4 test
+
 const plotterModel = new PlotterModel({});
 plotterModel.ws.start();
 
@@ -128,18 +130,6 @@ document.getElementById("wsSwich").onclick = function () {
   }
 
 }
-//just 4 test
-/*
-var testt0 = new Date();
-var testt1 = new Date();
-document.addEventListener('keydown', function (event) {
-  console.log('Key: ', event.key);
-  console.log('keyCode: ', event.keyCode);
-  testt0 = testt1;
-  testt1 = new Date();
-  console.log('Brake: ', Number(testt1) - Number(testt0))
-});*/
-//input t1
 //input scroll step
 document.forms.inscrollsize.onsubmit = function () {
   var message = this.message.value;
@@ -156,7 +146,14 @@ document.forms.inkeyStep.onsubmit = function () {
   }
   return false;
 };
+/*function test() {
+  console.log();
+}
 
-
-
+let testTimer = new MyTimer({
+  func: test,
+  delay: 100
+})
+testTimer.launch();
+*/
 export { plotterModel };
