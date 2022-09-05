@@ -64,6 +64,7 @@ document.forms.ingridStep.onsubmit = function () {
   var message = this.message.value;
   if (isNaN(message) == false) {
     plotterView.gridStep = Number(message);
+    plotterView.needFrame = true;
     console.log(message);
   }
   return false;
