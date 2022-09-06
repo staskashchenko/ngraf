@@ -2,6 +2,8 @@ import { MyTimer } from './MyTimer.js'
 class PlotterView {
     constructor(params) {
 
+        this._container = document.getElementById(params.container);
+
         this.model = params.model;
         this.oPointsLength = this.model.points.length;
         this.baseGridPoint = null;
@@ -33,27 +35,27 @@ class PlotterView {
             delay: this.dt
         })
 
-        this.graph = PlotterView.getElement('#root');//root el init
+        this.graph = this._container;//root el init
         this.leftCanvas = PlotterView.createElement('leftCanvas');//left canvas init
 
         //size of main div
         this.grafRootDivWidth = 1150;
         this.grafRootDivHeight = 700;
 
-        this.app = PlotterView.getElement('#root');//root element 
-        this.graf = PlotterView.createElement('canvas', 'graf');//graf canvas create
+        this.app = this._container;//root element 
+        this.graf = PlotterView.createElement('canvas', this._container.id + '_' + 'graf');//graf canvas create
         //graf canvas local cords
         this.gcordX = this.graf.width / 1000;
         this.gcordY = this.graf.height / 1000;
 
         this.gctx = this.graf.getContext("2d");//graf brush init
-        this.left = PlotterView.createElement('canvas', 'left');//left canvas init
+        this.left = PlotterView.createElement('canvas', this._container.id + '_' + 'left');//left canvas init
         //left canvas local cords
         this.lcordX = this.left.width / 1000;
         this.lcordY = this.left.height / 1000;
 
         this.lctx = this.left.getContext("2d");//left brush init
-        this.bottom = PlotterView.createElement('canvas', 'bottom');//bottom canvas init
+        this.bottom = PlotterView.createElement('canvas', this._container.id + '_' + 'bottom');//bottom canvas init
         //bottom canvas local cords
         this.bcordX = this.bottom.width / 1000;
         this.bcordY = this.bottom.height / 1000;
@@ -70,7 +72,7 @@ class PlotterView {
     }
     //element link geting
     static getElement(selector) {
-        const element = document.querySelector(selector)
+        const element = document.getElementById(selector)
         return element
     }
     //right way to set T with recalculation of t0 t1
@@ -118,26 +120,26 @@ class PlotterView {
     }
     //init(div and canvases create)
     baseInit() {
-        document.getElementById('root').style.width = this.grafRootDivWidth + 'px';
-        document.getElementById('root').style.height = this.grafRootDivHeight + 'px';
-        this.graf.id = 'graf';
+        this._container.style.width = this.grafRootDivWidth + 'px';
+        this._container.style.height = this.grafRootDivHeight + 'px';
+        this.graf.id = this._container.id + '_' + 'graf';
         this.gcordX = this.graf.width / 300;
         this.gcordY = this.graf.height / 300;
-        this.left.id = 'left';
+        this.left.id = this._container.id + '_' + 'left';
         this.lcordX = this.left.width / 300;
         this.lcordY = this.left.height / 300;
-        this.bottom.id = 'bottom';
+        this.bottom.id = this._container.id + '_' + 'bottom';
         this.bcordX = this.bottom.width / 300;
         this.bcordY = this.bottom.height / 300;
         this.app.append(this.left, this.graf, this.bottom);
-        document.getElementById('graf').width = this.grafRootDivWidth / 1.15;
-        document.getElementById('graf').height = this.grafRootDivHeight / 1.4;
+        document.getElementById(this._container.id + '_' + 'graf').width = this.grafRootDivWidth / 1.15;
+        document.getElementById(this._container.id + '_' + 'graf').height = this.grafRootDivHeight / 1.4;
 
-        document.getElementById('left').width = this.grafRootDivWidth / 7.67;
-        document.getElementById('left').height = this.grafRootDivHeight / 1.4;
-        document.getElementById('bottom').width = this.grafRootDivWidth / 1.15;
-        document.getElementById('bottom').height = this.grafRootDivHeight / 3.5;
-        document.getElementById('bottom').style.marginLeft = "150px";
+        document.getElementById(this._container.id + '_' + 'left').width = this.grafRootDivWidth / 7.67;
+        document.getElementById(this._container.id + '_' + 'left').height = this.grafRootDivHeight / 1.4;
+        document.getElementById(this._container.id + '_' + 'bottom').width = this.grafRootDivWidth / 1.15;
+        document.getElementById(this._container.id + '_' + 'bottom').height = this.grafRootDivHeight / 3.5;
+        document.getElementById(this._container.id + '_' + 'bottom').style.marginLeft = "150px";
         this.bcordY = this.bcordY / 2.5;
     }
     //time adapt(transforms date milliseconds format to String visual format)
@@ -228,6 +230,7 @@ class PlotterView {
     grafLineDraw() {
         var i0 = 0;
         var i1 = 0;
+        //console.log(this.model.points);
         for (let i = 0; i < this.model.points.length - 1; i++) {
             if ((this.t0 >= this.model.points[i].date) && (this.t0 <= this.model.points[i + 1].date)) {
                 i0 = i;
@@ -286,10 +289,9 @@ class PlotterView {
     }
     //1 frame draw
     frame() {
-
         this.isNewPoint();
         if (this.needFrame == true) {
-            console.log("new frame");
+            //console.log("new frame");
             this.cleanFrame()
             this.xLinesDraw();
             this.yGridDraw();
@@ -328,10 +330,10 @@ class PlotterView {
     controlInit() {
         let _this = this;
 
-        document.getElementById("graf").addEventListener('mouseover', function (event) {
+        document.getElementById(this._container.id + '_' + "graf").addEventListener('mouseover', function (event) {
             _this.grafOver = true;
         })
-        document.getElementById("graf").addEventListener('mouseout', function (event) {
+        document.getElementById(this._container.id + '_' + "graf").addEventListener('mouseout', function (event) {
             _this.grafOver = false;
         })
 
@@ -374,10 +376,10 @@ class PlotterView {
                 _this.dt = _this.olddt;
             }
         });
-        document.getElementById("graf").addEventListener('wheel', (event) => {
+        document.getElementById(this._container.id + '_' + "graf").addEventListener('wheel', (event) => {
             event.preventDefault();
-            let leftStep = _this.grafMouseX1 / document.getElementById('graf').width * _this.scrollSize;
-            let rightStep = (document.getElementById('graf').width - _this.grafMouseX1) / document.getElementById('graf').width * _this.scrollSize;;
+            let leftStep = _this.grafMouseX1 / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;
+            let rightStep = (document.getElementById(this._container.id + '_' + 'graf').width - _this.grafMouseX1) / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;;
             //see more
             if (event.deltaY > 0) {
                 this.needFrame = true;
@@ -389,12 +391,12 @@ class PlotterView {
                 _this.t1 = _this.t1 - rightStep;
             }
         });
-        document.getElementById("graf").addEventListener('mousemove', (event) => {
+        document.getElementById(this._container.id + '_' + "graf").addEventListener('mousemove', (event) => {
             _this.grafMouseX0 = _this.grafMouseX1;
             _this.grafMouseX1 = event.offsetX;
             if (_this.mouseDown == true) {
                 this.needFrame = true;
-                let deltaOffset = (_this.grafMouseX1 - _this.grafMouseX0) * (_this.t1 - _this.t0) / document.getElementById('graf').width;
+                let deltaOffset = (_this.grafMouseX1 - _this.grafMouseX0) * (_this.t1 - _this.t0) / document.getElementById(this._container.id + '_' + 'graf').width;
                 _this.t0 = _this.t0 - deltaOffset;
                 _this.t1 = _this.t1 - deltaOffset;
             }

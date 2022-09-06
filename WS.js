@@ -1,11 +1,13 @@
 import { Point } from './Point.js';
+import { Events } from './Events.js';
 
 class WS {
     constructor() {
+        this.actions = [];//list of models subscribed on new points recieving
         this._wstTimeoutId;//wst timeout id
         this._wst = 200; //websocket period
         this.active = false; //is WS active
-        this.onreceive = null;//push new points to model
+        this.events = new Events();
     }
     //random int generator for graf testing
     _getRandomInt(max) {
@@ -20,9 +22,7 @@ class WS {
     }
     //send point to model
     _dispatchPoi() {
-        if (this.onreceive) {
-            this.onreceive(this._genPoint());
-        }
+        this.events.dispatch("receive", this._genPoint());
     }
     //get websocket period
     get wst() {
@@ -48,6 +48,7 @@ class WS {
     stop() {
         this.active = false;
         clearInterval(this._wstTimeoutId);
+        this.events.dispatch("stop", Date.now());
     }
 }
 

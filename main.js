@@ -1,18 +1,39 @@
 import { PlotterModel } from './PlotterModel.js';
 import { PlotterView } from './PlotterView.js';
+import { WS } from './WS.js';
 
-const plotterModel = new PlotterModel({});
-plotterModel.ws.start();
+var ws = new WS();//model websocket
+ws.start();
 
-
-const plotterView = new PlotterView({
-  model: plotterModel
+const plotterModel1 = new PlotterModel({
+  name: "pl-1",
+  socket: ws
 });
-plotterView.launcher();
+
+//ws.register(plotterModel1);
+
+const plotterModel2 = new PlotterModel({
+  name: "pl-2",
+  socket: ws
+});
+
+//ws.register(plotterModel2);
+
+const plotterView1 = new PlotterView({
+  container: 'root1',
+  model: plotterModel1
+});
+plotterView1.launcher();
+
+const plotterView2 = new PlotterView({
+  container: 'root2',
+  model: plotterModel2
+});
+plotterView2.launcher();
 
 //just for demo
-document.getElementById("int0").value = plotterView.t0;
-document.getElementById("int1").value = plotterView.t1;
+document.getElementById("int0").value = plotterView1.t0;
+document.getElementById("int1").value = plotterView1.t1;
 
 //input
 //input T
@@ -28,7 +49,7 @@ document.forms.inT.onsubmit = function () {
 
 function inT() {
   if (isNaN(document.getElementById('inT').value) == false) {
-    plotterModel.setT(Number(document.getElementById('inT').value));
+    plotterModel1.setT(Number(document.getElementById('inT').value));
   }
 }
 
@@ -36,7 +57,7 @@ function inT() {
 document.forms.indt.onsubmit = function () {
   var message = this.message.value;
   if (isNaN(message) == false) {
-    plotterView.dt = Number(message);
+    plotterView1.dt = Number(message);
     console.log(message);
   }
   return false;
@@ -45,7 +66,7 @@ document.forms.indt.onsubmit = function () {
 document.forms.inu.onsubmit = function () {
   var message = this.message.value;
   if (isNaN(message) == false) {
-    plotterView.u = Number(message);
+    plotterView1.u = Number(message);
     console.log(message);
   }
   return false;
@@ -54,7 +75,7 @@ document.forms.inu.onsubmit = function () {
 document.forms.inwst.onsubmit = function () {
   var message = this.message.value;
   if (isNaN(message) == false) {
-    plotterModel.ws.wst = Number(message);
+    ws.wst = Number(message);
     console.log(message);
   }
   return false;
@@ -63,8 +84,8 @@ document.forms.inwst.onsubmit = function () {
 document.forms.ingridStep.onsubmit = function () {
   var message = this.message.value;
   if (isNaN(message) == false) {
-    plotterView.gridStep = Number(message);
-    plotterView.needFrame = true;
+    plotterView1.gridStep = Number(message);
+    plotterView1.needFrame = true;
     console.log(message);
   }
   return false;
@@ -73,7 +94,7 @@ document.forms.ingridStep.onsubmit = function () {
 document.forms.int0.onsubmit = function () {
   var message = this.message.value;
   if (isNaN(message) == false) {
-    plotterView.sett0(Number(message));
+    plotterView1.sett0(Number(message));
 
     document.getElementById("inT").value = plotterView.T;
     console.log(message);
@@ -84,7 +105,7 @@ document.forms.int0.onsubmit = function () {
 document.forms.int1.onsubmit = function () {
   var message = this.message.value;
   if (isNaN(message) == false) {
-    plotterView.sett1(Number(message));
+    plotterView1.sett1(Number(message));
 
     document.getElementById("inT").value = plotterView.T;
     console.log(message);
@@ -96,7 +117,7 @@ document.getElementById("sett0t1").onclick = function () {
   var msg0 = document.getElementById("int0").value;
   var msg1 = document.getElementById("int1").value;
   if ((isNaN(msg0) == false) && (isNaN(msg1) == false)) {
-    plotterView.sett0t1(Number(msg0), Number(msg1));
+    plotterView1.sett0t1(Number(msg0), Number(msg1));
 
     document.getElementById("inT").value = plotterView.T;
     console.log(msg0);
@@ -107,24 +128,24 @@ document.getElementById("sett0t1").onclick = function () {
 document.getElementById("animSwich").onclick = function () {
   if (plotterView.animation == true) {
     document.getElementById("animSwich").value = "Turn on";
-    plotterView.stopAnim();
+    plotterView1.stopAnim();
     console.log("animation=false");
-  } else if (plotterView.animation == false) {
+  } else if (plotterView1.animation == false) {
     document.getElementById("animSwich").value = "Turn off";
-    plotterView.startAnim();
+    plotterView1.startAnim();
     console.log("animation=true");
   }
 
 }
 //wsSwich
 document.getElementById("wsSwich").onclick = function () {
-  if (plotterModel.ws.active == true) {
+  if (ws.active == true) {
     document.getElementById("wsSwich").value = "Turn on";
-    plotterModel.ws.stop();
+    ws.stop();
     console.log("ws.active=false");
-  } else if (plotterModel.ws.active == false) {
+  } else if (ws.active == false) {
     document.getElementById("wsSwich").value = "Turn off";
-    plotterModel.ws.start();
+    ws.start();
     console.log("ws.active=true");
   }
 
@@ -133,7 +154,7 @@ document.getElementById("wsSwich").onclick = function () {
 document.forms.inscrollsize.onsubmit = function () {
   var message = this.message.value;
   if (isNaN(message) == false) {
-    plotterView.scrollSize = Number(message);
+    plotterView1.scrollSize = Number(message);
   }
   return false;
 };
@@ -141,9 +162,9 @@ document.forms.inscrollsize.onsubmit = function () {
 document.forms.inkeyStep.onsubmit = function () {
   var message = this.message.value;
   if (isNaN(message) == false) {
-    plotterView.keyStep = Number(message);
+    plotterView1.keyStep = Number(message);
   }
   return false;
 };
 
-export { plotterModel };
+//export { plotterModel };
