@@ -1,30 +1,33 @@
-import { Point } from './Point.js';
-import { Events } from './Events.js';
-
-class WS {
+import { Point } from './Point';
+import { Events } from './Events';
+export default class WS {
+    _wstTimeoutId: number;
+    _wst: number;
+    active: boolean;
+    events: object;
     constructor() {
-        this._wstTimeoutId;//wst timeout id
+        this._wstTimeoutId = 0;//wst timeout id
         this._wst = 200; //websocket period
         this.active = false; //is WS active
         this.events = new Events();
     }
     //random int generator for graf testing
-    _getRandomInt(max) {
+    _getRandomInt(max: number): number {
         return Math.floor(Math.random() * max * 100) / 100;
     }
     //generate new point
-    _genPoint() {
+    _genPoint(): object {
         return new Point({
             date: new Date(),
             value: this._getRandomInt(100)
         });
     }
     //send point to model
-    _dispatchPoi() {
+    _dispatchPoi(): void {
         this.events.dispatch("receive", this._genPoint());
     }
     //get websocket period
-    get wst() {
+    get wst(): number {
         return this._wst;
     }
     //set websocket period
@@ -32,9 +35,8 @@ class WS {
         this._wst = val;
         this.start();
     }
-
     //start ws
-    start() {
+    start(): void {
         this.active = true;
         clearInterval(this._wstTimeoutId);
         this._wstTimeoutId = setInterval(() => {
@@ -44,11 +46,8 @@ class WS {
         );
     }
     //stop ws
-    stop() {
+    stop(): void {
         this.active = false;
         clearInterval(this._wstTimeoutId);
-        this.events.dispatch("stop", Date.now());
     }
 }
-
-export { WS };

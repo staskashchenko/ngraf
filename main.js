@@ -30,7 +30,7 @@ const plotterView2 = new PlotterView({
   model: plotterModel2
 });
 plotterView2.launcher();
-
+/*
 //just for demo
 document.getElementById("int0").value = plotterView1.t0;
 document.getElementById("int1").value = plotterView1.t1;
@@ -165,6 +165,6 @@ document.forms.inkeyStep.onsubmit = function () {
     plotterView1.keyStep = Number(message);
   }
   return false;
-};
+};*/
 
 //export { plotterModel };

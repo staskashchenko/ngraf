@@ -8,7 +8,8 @@
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id='root1'></div>
+  <div id='root2'></div>
   <p style="margin-left: 1233px; position: absolute; top: -15px;">Peroid(T):</p>
   <p style="margin-left: 1187px; position: absolute; top: 7px;">Frame peroid(dt):</p>
   <p style="margin-left: 1178px; position: absolute; top: 28px;">Animation step(u):</p>
