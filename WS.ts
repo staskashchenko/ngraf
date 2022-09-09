@@ -1,12 +1,12 @@
 import { Point } from './Point';
 import { Events } from './Events';
-export default class WS {
-    _wstTimeoutId: number;
+class WS {
+    _wstTimeoutId: any;
     _wst: number;
     active: boolean;
     events: object;
     constructor() {
-        this._wstTimeoutId = 0;//wst timeout id
+        this._wstTimeoutId = null;//wst timeout id
         this._wst = 200; //websocket period
         this.active = false; //is WS active
         this.events = new Events();
@@ -51,3 +51,4 @@ export default class WS {
         clearInterval(this._wstTimeoutId);
     }
 }
+export { WS };

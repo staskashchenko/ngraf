@@ -1,8 +1,13 @@
-export default class Point {
+interface IPointParams {
+    date?: Date,
+    value?: number
+}
+class Point {
     date: Date;
     value: number;
-    constructor(date: Date, value: number) {
-        this.date = date || new Date();//times
-        this.value = value || 0;//values
+    constructor(params: IPointParams) {
+        this.date = params.date || new Date();//times
+        this.value = params.value || 0;//values
     }
 }
+export { Point };

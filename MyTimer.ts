@@ -1,11 +1,15 @@
-export default class MyTimer {
+interface IMyTimerParams {
+    func: Function,
+    delay?: number
+}
+class MyTimer {
     func: Function;
     delay: number;
     launchTime: number;
     isActiv: boolean;
-    constructor(func: Function, delay: number) {
-        this.func = func;//function
-        this.delay = delay || 0;//delay
+    constructor(params: IMyTimerParams) {
+        this.func = params.func;//function
+        this.delay = params.delay || 1;//delay
         this.launchTime = (new Date()).getTime() + this.delay;//function launch time
         this.isActiv = true;//is timer activ
     }
@@ -25,3 +29,4 @@ export default class MyTimer {
         this._timer();
     }
 }
+export { MyTimer };

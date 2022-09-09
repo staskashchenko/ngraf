@@ -1,4 +1,4 @@
-export default class Events {
+class Events {
     subEvents: Map<string, Array<Function>>;
     constructor() {
         this.subEvents = new Map<string, Array<Function>>();
@@ -20,3 +20,4 @@ export default class Events {
         }
     }
 }
+export { Events };
