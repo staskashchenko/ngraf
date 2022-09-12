@@ -1,7 +1,8 @@
 import { MyTimer } from './MyTimer'
+import { PlotterModel } from './PlotterModel';
 interface IViewParams {
     container: string;
-    model: object;
+    model: PlotterModel;
     gridStep?: number;
     T?: number;
     u?: number;
@@ -16,8 +17,8 @@ interface IViewParams {
     grafRootDivHeight?: number;
 }
 class PlotterView {
-    _container: Element;
-    model: object;
+    _container: HTMLElement;
+    model: PlotterModel;
     oPointsLength: number;
     baseGridPoint: number | null;
     gridStep: number;
@@ -40,20 +41,20 @@ class PlotterView {
     grafMouseX0: number;
     grafMouseX1: number;
     mouseDown: boolean;
-    uTimer: object;
-    graph: Element | null;
+    uTimer: MyTimer;
+    graph: HTMLElement | null;
     grafRootDivWidth: number;
     grafRootDivHeight: number;
-    app: Element | null;
-    graf: Element;
+    app: HTMLElement | null;
+    graf: HTMLCanvasElement;
     gcordX: number;
     gcordY: number;
     gctx: any;
-    left: Element;
+    left: HTMLCanvasElement;
     lcordX: number;
     lcordY: number;
     lctx: any;
-    bottom: Element;
+    bottom: HTMLCanvasElement;
     bcordX: number;
     bcordY: number;
     bctx: any;
@@ -100,22 +101,22 @@ class PlotterView {
         this.grafRootDivHeight = 700;
 
         this.app = this._container;//root element 
-        this.graf = PlotterView.createElement('canvas', this._container.id + '_' + 'graf');//graf canvas create
+        this.graf = PlotterView.createCanvas(this._container.id + '_' + 'graf');//graf canvas create
         //graf canvas local cords
-        this.gcordX = this.graf.width / 1000;
-        this.gcordY = this.graf.height / 1000;
+        this.gcordX = parseInt(this.graf.style.width, 10) / 1000;
+        this.gcordY = parseInt(this.graf.style.height, 10) / 1000;
 
         this.gctx = this.graf.getContext("2d");//graf brush init
-        this.left = PlotterView.createElement('canvas', this._container.id + '_' + 'left');//left canvas init
+        this.left = PlotterView.createCanvas(this._container.id + '_' + 'left');//left canvas init
         //left canvas local cords
-        this.lcordX = this.left.width / 1000;
-        this.lcordY = this.left.height / 1000;
+        this.lcordX = parseInt(this.left.style.width, 10) / 1000;
+        this.lcordY = parseInt(this.left.style.height, 10) / 1000;
 
         this.lctx = this.left.getContext("2d");//left brush init
-        this.bottom = PlotterView.createElement('canvas', this._container.id + '_' + 'bottom');//bottom canvas init
+        this.bottom = PlotterView.createCanvas(this._container.id + '_' + 'bottom');//bottom canvas init
         //bottom canvas local cords
-        this.bcordX = this.bottom.width / 1000;
-        this.bcordY = this.bottom.height / 1000;
+        this.bcordX = parseInt(this.bottom.style.width, 10) / 1000;
+        this.bcordY = parseInt(this.bottom.style.height, 10) / 1000;
 
         this.bctx = this.bottom.getContext("2d");//bottom brush init
 
@@ -124,6 +125,12 @@ class PlotterView {
     //element creation
     static createElement(tag: string, className: string): HTMLElement {
         const element = document.createElement(tag)
+        if (className) element.classList.add(className)
+        return element
+    }
+    //canvas element creation
+    static createCanvas(className: string): HTMLCanvasElement {
+        const element = document.createElement("canvas")
         if (className) element.classList.add(className)
         return element
     }
@@ -180,22 +187,22 @@ class PlotterView {
         this._container.style.width = this.grafRootDivWidth + 'px';
         this._container.style.height = this.grafRootDivHeight + 'px';
         this.graf.id = this._container.id + '_' + 'graf';
-        this.gcordX = this.graf.width / 300;
-        this.gcordY = this.graf.height / 300;
+        this.gcordX = parseInt(this.graf.style.width, 10) / 300;
+        this.gcordY = parseInt(this.graf.style.height, 10) / 300;
         this.left.id = this._container.id + '_' + 'left';
-        this.lcordX = this.left.width / 300;
-        this.lcordY = this.left.height / 300;
+        this.lcordX = parseInt(this.left.style.width, 10) / 300;
+        this.lcordY = parseInt(this.left.style.height, 10) / 300;
         this.bottom.id = this._container.id + '_' + 'bottom';
-        this.bcordX = this.bottom.width / 300;
-        this.bcordY = this.bottom.height / 300;
+        this.bcordX = parseInt(this.bottom.style.width, 10) / 300;
+        this.bcordY = parseInt(this.bottom.style.height, 10) / 300;
         this.app.append(this.left, this.graf, this.bottom);
-        document.getElementById(this._container.id + '_' + 'graf').width = this.grafRootDivWidth / 1.15;
-        document.getElementById(this._container.id + '_' + 'graf').height = this.grafRootDivHeight / 1.4;
+        document.getElementById(this._container.id + '_' + 'graf').style.width = (this.grafRootDivWidth / 1.15) + "px";
+        document.getElementById(this._container.id + '_' + 'graf').style.height = (this.grafRootDivHeight / 1.4) + "px";
 
-        document.getElementById(this._container.id + '_' + 'left').width = this.grafRootDivWidth / 7.67;
-        document.getElementById(this._container.id + '_' + 'left').height = this.grafRootDivHeight / 1.4;
-        document.getElementById(this._container.id + '_' + 'bottom').width = this.grafRootDivWidth / 1.15;
-        document.getElementById(this._container.id + '_' + 'bottom').height = this.grafRootDivHeight / 3.5;
+        document.getElementById(this._container.id + '_' + 'left').style.width = (this.grafRootDivWidth / 7.67) + "px";
+        document.getElementById(this._container.id + '_' + 'left').style.height = (this.grafRootDivHeight / 1.4) + "px";
+        document.getElementById(this._container.id + '_' + 'bottom').style.width = (this.grafRootDivWidth / 1.15) + "px";
+        document.getElementById(this._container.id + '_' + 'bottom').style.height = (this.grafRootDivHeight / 3.5) + "px";
         document.getElementById(this._container.id + '_' + 'bottom').style.marginLeft = "150px";
         this.bcordY = this.bcordY / 2.5;
     }
@@ -289,10 +296,10 @@ class PlotterView {
         var i1 = 0;
         //console.log(this.model.points);
         for (let i = 0; i < this.model.points.length - 1; i++) {
-            if ((this.t0 >= this.model.points[i].date) && (this.t0 <= this.model.points[i + 1].date)) {
+            if ((this.t0 >= Number(this.model.points[i].date)) && (this.t0 <= Number(this.model.points[i + 1].date))) {
                 i0 = i;
             }
-            if ((this.t1 >= this.model.points[i].date) && (this.t1 <= this.model.points[i + 1].date)) {
+            if ((this.t1 >= Number(this.model.points[i].date)) && (this.t1 <= Number(this.model.points[i + 1].date))) {
                 i1 = i + 1;
             } else {
                 i1 = this.model.points.length - 1;
@@ -307,9 +314,9 @@ class PlotterView {
         this.gctx.lineWidth = 2;
         this.gctx.font = "15px Verdana";
         for (let i = i0; i < i1; i++) {
-            lx0 = (this.model.points[i].date - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
+            lx0 = (Number(this.model.points[i].date) - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
             lY0 = (1000 - 10 * this.model.points[i].value) * this.gcordY;
-            lx1 = (this.model.points[i + 1].date - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
+            lx1 = (Number(this.model.points[i + 1].date) - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
             lY1 = (1000 - 10 * this.model.points[i + 1].value) * this.gcordY;
             this.gctx.strokeText("[ " + this.model.points[i].value + " ]", lx0, lY0);
             this.gctx.moveTo(lx0, lY0);
@@ -332,8 +339,8 @@ class PlotterView {
     }
     //cleans the frame
     cleanFrame(): void {
-        this.gctx.clearRect(0, 0, this.graf.width, this.graf.height);
-        this.bctx.clearRect(0, 0, this.bottom.width, this.bottom.height);
+        this.gctx.clearRect(0, 0, this.graf.style.width, this.graf.style.height);
+        this.bctx.clearRect(0, 0, this.bottom.style.width, this.bottom.style.height);
     }
     //checks is there a new point in the model since last frame
     isNewPoint(): void {
@@ -434,8 +441,8 @@ class PlotterView {
         });
         document.getElementById(this._container.id + '_' + "graf").addEventListener('wheel', (event) => {
             event.preventDefault();
-            let leftStep = _this.grafMouseX1 / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;
-            let rightStep = (document.getElementById(this._container.id + '_' + 'graf').width - _this.grafMouseX1) / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;;
+            let leftStep = _this.grafMouseX1 / parseInt(document.getElementById(this._container.id + '_' + 'graf').style.width, 10) * _this.scrollSize;
+            let rightStep = (parseInt(document.getElementById(this._container.id + '_' + 'graf').style.width, 10) - _this.grafMouseX1) / parseInt(document.getElementById(this._container.id + '_' + 'graf').style.width, 10) * _this.scrollSize;;
             //see more
             if (event.deltaY > 0) {
                 this.needFrame = true;
@@ -452,7 +459,7 @@ class PlotterView {
             _this.grafMouseX1 = event.offsetX;
             if (_this.mouseDown == true) {
                 this.needFrame = true;
-                let deltaOffset = (_this.grafMouseX1 - _this.grafMouseX0) * (_this.t1 - _this.t0) / document.getElementById(this._container.id + '_' + 'graf').width;
+                let deltaOffset = (_this.grafMouseX1 - _this.grafMouseX0) * (_this.t1 - _this.t0) / parseInt(document.getElementById(this._container.id + '_' + 'graf').style.width, 10);
                 _this.t0 = _this.t0 - deltaOffset;
                 _this.t1 = _this.t1 - deltaOffset;
             }

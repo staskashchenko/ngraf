@@ -1,10 +1,10 @@
-import { Point } from './Point';
+import { MyPoint } from './MyPoint';
 import { Events } from './Events';
 class WS {
     _wstTimeoutId: any;
     _wst: number;
     active: boolean;
-    events: object;
+    events: Events;
     constructor() {
         this._wstTimeoutId = null;//wst timeout id
         this._wst = 200; //websocket period
@@ -17,7 +17,7 @@ class WS {
     }
     //generate new point
     _genPoint(): object {
-        return new Point({
+        return new MyPoint({
             date: new Date(),
             value: this._getRandomInt(100)
         });

@@ -1,21 +1,22 @@
+import { MyPoint } from './MyPoint';
 import { WS } from "./WS";
 
 interface IModelParams {
     name?: string,
-    points?: Array<object>,
-    socket: object
+    points?: Array<MyPoint>,
+    socket: WS
 }
 class PlotterModel {
     name: string;
-    points: Array<object>;
+    points: Array<MyPoint>;
     _socket: WS;
     constructor(params: IModelParams) {
         this.name = params.name || "";
-        this.points = params.points || new Array<object>();//model points
+        this.points = params.points || new Array<MyPoint>();//model points
         this._socket = params.socket;
         this._socket.events.on("receive", this._onReceive.bind(this))
     }
-    _onReceive(poi: object): void {
+    _onReceive(poi: MyPoint): void {
         this.points.push(poi);
     }
 }
