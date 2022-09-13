@@ -45,7 +45,6 @@ class PlotterView {
     graph: HTMLElement | null;
     grafRootDivWidth: number;
     grafRootDivHeight: number;
-    app: HTMLElement;
     graf: HTMLCanvasElement;
     gcordX: number;
     gcordY: number;
@@ -101,7 +100,6 @@ class PlotterView {
         this.grafRootDivWidth = 1150;
         this.grafRootDivHeight = 700;
 
-        this.app = this._container;//root element 
         // @ts-ignore
         this.graf = PlotterView.createElement('canvas', this._container.id + '_' + 'graf');//graf canvas create
         //graf canvas local cords
@@ -196,7 +194,7 @@ class PlotterView {
         this.bottom.id = this._container.id + '_' + 'bottom';
         this.bcordX = this.bottom.width / 300;
         this.bcordY = this.bottom.height / 300;
-        this.app.append(this.left, this.graf, this.bottom);
+        this._container.append(this.left, this.graf, this.bottom);
         // @ts-ignore
         document.getElementById(this._container.id + '_' + 'graf').width = this.grafRootDivWidth / 1.15;
         // @ts-ignore
