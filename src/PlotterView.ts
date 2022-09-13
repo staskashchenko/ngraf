@@ -1,5 +1,5 @@
 import { MyTimer } from './MyTimer'
-import { PlotterModel } from './PlotterModel';
+import { PlotterModel } from './PlotterModel'
 interface IViewParams {
     container: string;
     model: PlotterModel;
@@ -45,22 +45,22 @@ class PlotterView {
     graph: HTMLElement | null;
     grafRootDivWidth: number;
     grafRootDivHeight: number;
-    app: HTMLElement | null;
+    app: HTMLElement;
     graf: HTMLCanvasElement;
     gcordX: number;
     gcordY: number;
-    gctx: any;
+    gctx: CanvasRenderingContext2D;
     left: HTMLCanvasElement;
     lcordX: number;
     lcordY: number;
-    lctx: any;
+    lctx: CanvasRenderingContext2D;
     bottom: HTMLCanvasElement;
     bcordX: number;
     bcordY: number;
-    bctx: any;
+    bctx: CanvasRenderingContext2D;
 
     constructor(params: IViewParams) {
-
+        // @ts-ignore
         this._container = document.getElementById(params.container);
 
         this.model = params.model;
@@ -82,13 +82,12 @@ class PlotterView {
         this.animation = true;//animation trigger
         this.needFrame = true;//is new frame needed
         this.clasterBorder = 18;//maximum number of points before clasterisation
-
         this.oldanimation = this.animation;//old animation trigger(need 4 keys control)
         this.scrollSize = 400;//scroll size(how much milliseconds will be zoomed in 1 wheel step)
         this.keyStep = 30;//default key step(how much milliseconds will be scrolled in 1 keyhold step)
         this.grafOver = false; //is mouse over graf canvas
+        this.grafMouseX0 = 0;//mouse X over graf before
         this.grafMouseX1 = 0;//mouse X over graf now
-        this.grafMouseX0 = this.grafMouseX1;//mouse X over graf before
         this.mouseDown = false;//is mouse down
         this.uTimer = new MyTimer({//timer 4 frames animation
             func: this.dtuChanger.bind(this),
@@ -96,57 +95,59 @@ class PlotterView {
         })
 
         this.graph = this._container;//root el init
+        //this.leftCanvas = PlotterView.createElement('leftCanvas');//left canvas init
+
         //size of main div
         this.grafRootDivWidth = 1150;
         this.grafRootDivHeight = 700;
 
         this.app = this._container;//root element 
-        this.graf = PlotterView.createCanvas(this._container.id + '_' + 'graf');//graf canvas create
+        // @ts-ignore
+        this.graf = PlotterView.createElement('canvas', this._container.id + '_' + 'graf');//graf canvas create
         //graf canvas local cords
-        this.gcordX = parseInt(this.graf.style.width, 10) / 1000;
-        this.gcordY = parseInt(this.graf.style.height, 10) / 1000;
+        this.gcordX = this.graf.width / 1000;
+        this.gcordY = this.graf.height / 1000;
 
+        // @ts-ignore
         this.gctx = this.graf.getContext("2d");//graf brush init
-        this.left = PlotterView.createCanvas(this._container.id + '_' + 'left');//left canvas init
+        // @ts-ignore
+        this.left = PlotterView.createElement('canvas', this._container.id + '_' + 'left');//left canvas init
         //left canvas local cords
-        this.lcordX = parseInt(this.left.style.width, 10) / 1000;
-        this.lcordY = parseInt(this.left.style.height, 10) / 1000;
+        this.lcordX = this.left.width / 1000;
+        this.lcordY = this.left.height / 1000;
 
+        // @ts-ignore
         this.lctx = this.left.getContext("2d");//left brush init
-        this.bottom = PlotterView.createCanvas(this._container.id + '_' + 'bottom');//bottom canvas init
+        // @ts-ignore
+        this.bottom = PlotterView.createElement('canvas', this._container.id + '_' + 'bottom');//bottom canvas init
         //bottom canvas local cords
-        this.bcordX = parseInt(this.bottom.style.width, 10) / 1000;
-        this.bcordY = parseInt(this.bottom.style.height, 10) / 1000;
+        this.bcordX = this.bottom.width / 1000;
+        this.bcordY = this.bottom.height / 1000;
 
+        // @ts-ignore
         this.bctx = this.bottom.getContext("2d");//bottom brush init
 
     }
 
     //element creation
-    static createElement(tag: string, className: string): HTMLElement {
+    static createElement(tag: string, className: string) {
         const element = document.createElement(tag)
         if (className) element.classList.add(className)
         return element
     }
-    //canvas element creation
-    static createCanvas(className: string): HTMLCanvasElement {
-        const element = document.createElement("canvas")
-        if (className) element.classList.add(className)
-        return element
-    }
     //element link geting
-    static getElement(selector: string): HTMLElement | null {
+    static getElement(selector: string) {
         const element = document.getElementById(selector)
         return element
     }
     //right way to set T with recalculation of t0 t1
-    setT(newT: number): void {
+    setT(newT: number) {
         this.needFrame = true;
         this.T = newT;
         this.t1 = this.t0 + this.T;
     }
     //right way to set t0 with recalculation of t1 or T
-    sett0(newt0: number): void {
+    sett0(newt0: number) {
         this.needFrame = true;
         this.t0 = newt0;
         if (this.t1 > this.t0) {
@@ -156,7 +157,7 @@ class PlotterView {
         }
     }
     //right way to set t1 with recalculation of t0 or T
-    sett1(newt1: number): void {
+    sett1(newt1: number) {
         this.needFrame = true;
         this.t1 = newt1;
         if (this.t1 > this.t0) {
@@ -166,7 +167,7 @@ class PlotterView {
         }
     }
     //right way to set t0 and t1 with recalculation T
-    sett0t1(newt0: number, newt1: number): void {
+    sett0t1(newt0: number, newt1: number) {
         if (newt0 < newt1) {
             this.needFrame = true;
             this.t0 = newt0;
@@ -175,42 +176,49 @@ class PlotterView {
         }
     }
     //stop anim
-    stopAnim(): void {
+    stopAnim() {
         this.animation = false;
     }
     //start anim
-    startAnim(): void {
+    startAnim() {
         this.animation = true;
     }
     //init(div and canvases create)
-    baseInit(): void {
+    baseInit() {
         this._container.style.width = this.grafRootDivWidth + 'px';
         this._container.style.height = this.grafRootDivHeight + 'px';
         this.graf.id = this._container.id + '_' + 'graf';
-        this.gcordX = parseInt(this.graf.style.width, 10) / 300;
-        this.gcordY = parseInt(this.graf.style.height, 10) / 300;
+        this.gcordX = this.graf.width / 300;
+        this.gcordY = this.graf.height / 300;
         this.left.id = this._container.id + '_' + 'left';
-        this.lcordX = parseInt(this.left.style.width, 10) / 300;
-        this.lcordY = parseInt(this.left.style.height, 10) / 300;
+        this.lcordX = this.left.width / 300;
+        this.lcordY = this.left.height / 300;
         this.bottom.id = this._container.id + '_' + 'bottom';
-        this.bcordX = parseInt(this.bottom.style.width, 10) / 300;
-        this.bcordY = parseInt(this.bottom.style.height, 10) / 300;
+        this.bcordX = this.bottom.width / 300;
+        this.bcordY = this.bottom.height / 300;
         this.app.append(this.left, this.graf, this.bottom);
-        document.getElementById(this._container.id + '_' + 'graf').style.width = (this.grafRootDivWidth / 1.15) + "px";
-        document.getElementById(this._container.id + '_' + 'graf').style.height = (this.grafRootDivHeight / 1.4) + "px";
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'graf').width = this.grafRootDivWidth / 1.15;
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'graf').height = this.grafRootDivHeight / 1.4;
 
-        document.getElementById(this._container.id + '_' + 'left').style.width = (this.grafRootDivWidth / 7.67) + "px";
-        document.getElementById(this._container.id + '_' + 'left').style.height = (this.grafRootDivHeight / 1.4) + "px";
-        document.getElementById(this._container.id + '_' + 'bottom').style.width = (this.grafRootDivWidth / 1.15) + "px";
-        document.getElementById(this._container.id + '_' + 'bottom').style.height = (this.grafRootDivHeight / 3.5) + "px";
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'left').width = this.grafRootDivWidth / 7.67;
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'left').height = this.grafRootDivHeight / 1.4;
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'bottom').width = this.grafRootDivWidth / 1.15;
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'bottom').height = this.grafRootDivHeight / 3.5;
+        // @ts-ignore
         document.getElementById(this._container.id + '_' + 'bottom').style.marginLeft = "150px";
         this.bcordY = this.bcordY / 2.5;
     }
     //time adapt(transforms date milliseconds format to String visual format)
-    timeAdapt(milsecs: number): string {
-        var hh: string = String(Math.floor(milsecs / 3600000));
-        var mm: string = String(Math.floor((milsecs - Number(hh) * 3600000) / 60000));
-        var ss: string = String(Math.floor((milsecs - Number(hh) * 3600000 - Number(mm) * 60000) / 1000));
+    timeAdapt(milsecs: number) {
+        var hh = String(Math.floor(milsecs / 3600000));
+        var mm = String(Math.floor((milsecs - Number(hh) * 3600000) / 60000));
+        var ss = String(Math.floor((milsecs - Number(hh) * 3600000 - Number(mm) * 60000) / 1000));
         hh = String((Number(hh) + 3) % 24);
         if (String(hh).length == 1) {
             hh = "0" + hh;
@@ -228,7 +236,7 @@ class PlotterView {
         return (this.model.points[i].date - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
     }*/
     //draw(x and y basis lines draw)
-    basisDraw(): void {
+    basisDraw() {
         this.gctx.beginPath();
         this.gctx.strokeStyle = "black";
         this.gctx.lineWidth = 3;
@@ -238,7 +246,7 @@ class PlotterView {
         this.gctx.stroke();
     }
     //horisontal lines draw
-    xLinesDraw(): void {
+    xLinesDraw() {
         this.gctx.beginPath();
         this.gctx.strokeStyle = "#C0C0C0";
         this.gctx.lineWidth = 1;
@@ -249,12 +257,12 @@ class PlotterView {
         this.gctx.stroke();
     }
     //vertical lines draw
-    yGridDraw(): void {
+    yGridDraw() {
         this.gctx.beginPath();
         this.gctx.strokeStyle = "#C0C0C0";
         this.gctx.lineWidth = 1;
-        var gridMilsec: number;
-        var gridX: number;
+        var gridMilsec;
+        var gridX;
         for (let i = 0; i < (this.t1 - this.t0) / this.gridStep + 2; i++) {
             gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
             gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
@@ -268,12 +276,12 @@ class PlotterView {
         this.bctx.lineWidth = 1;
         this.bctx.font = "10px Verdana";
         for (let i = 0; i < (this.t1 - this.t0) / this.gridStep + 2; i++) {
-            var gridMilsec: number = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
+            gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
             if (this.baseGridPoint == null) {
                 this.baseGridPoint = gridMilsec;
             }
             gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
-            let skipI: number = Math.floor((this.t1 - this.t0) / (this.gridStep * this.clasterBorder));
+            let skipI = Math.floor((this.t1 - this.t0) / (this.gridStep * this.clasterBorder));
             gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
             gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
             if (skipI > 0) {
@@ -291,7 +299,7 @@ class PlotterView {
         this.bctx.stroke();
     }
     //graf line draw
-    grafLineDraw(): void {
+    grafLineDraw() {
         var i0 = 0;
         var i1 = 0;
         //console.log(this.model.points);
@@ -325,25 +333,25 @@ class PlotterView {
         this.gctx.stroke();
     }
     //left draw
-    leftGreyDraw(): void {
+    leftGreyDraw() {
         this.lctx.beginPath();
         this.lctx.strokeStyle = "black";
         this.lctx.lineWidth = 2;
         this.lctx.font = "15px Verdana";
-        this.lctx.fillText(0, 135 * this.lcordX, 995 * this.lcordY);
+        this.lctx.fillText(String(0), 135 * this.lcordX, 995 * this.lcordY);
         for (let i = 1; i < 10; i++) {
-            this.lctx.fillText(100 * i, 129 * this.lcordX, (1000 - 100 * i) * this.lcordY);
+            this.lctx.fillText(String(100 * i), 129 * this.lcordX, (1000 - 100 * i) * this.lcordY);
         }
-        this.lctx.fillText(100, 120.5 * this.lcordX, 23 * this.lcordY);
+        this.lctx.fillText(String(100), 120.5 * this.lcordX, 23 * this.lcordY);
         this.lctx.stroke();
     }
     //cleans the frame
-    cleanFrame(): void {
-        this.gctx.clearRect(0, 0, this.graf.style.width, this.graf.style.height);
-        this.bctx.clearRect(0, 0, this.bottom.style.width, this.bottom.style.height);
+    cleanFrame() {
+        this.gctx.clearRect(0, 0, this.graf.width, this.graf.height);
+        this.bctx.clearRect(0, 0, this.bottom.width, this.bottom.height);
     }
     //checks is there a new point in the model since last frame
-    isNewPoint(): void {
+    isNewPoint() {
         if (this.model.points.length > 1) {
             if ((this.oPointsLength < this.model.points.length) && (Number(this.model.points[this.model.points.length - 2].date) < this.t1)) {
                 this.oPointsLength = this.model.points.length;
@@ -352,7 +360,7 @@ class PlotterView {
         }
     }
     //1 frame draw
-    frame(): void {
+    frame() {
         this.isNewPoint();
         if (this.needFrame == true) {
             //console.log("new frame");
@@ -368,7 +376,7 @@ class PlotterView {
         requestAnimationFrame(() => { this.frame(); });
     }
     //changer of t0 and t1 on u every dt milliseconds
-    dtuChanger(): void {
+    dtuChanger() {
         if ((this.animation == true) && (this.dt > 0)) {
             this.needFrame = true;
             this.t0 = this.t0 + this.u;
@@ -379,27 +387,29 @@ class PlotterView {
         }
     }
     //left key press
-    leftKeyPress(): void {
+    leftKeyPress() {
         this.needFrame = true;
         this.t0 = this.t0 - this.u;
         this.t1 = this.t1 - this.u;
     }
     //right key press
-    rightKeyPress(): void {
+    rightKeyPress() {
         this.needFrame = true;
         this.t0 = this.t0 + this.u;
         this.t1 = this.t1 + this.u;
     }
     //keys control
-    controlInit(): void {
-        var _this = this;
-
+    controlInit() {
+        let _this = this;
+        // @ts-ignore
         document.getElementById(this._container.id + '_' + "graf").addEventListener('mouseover', function (event) {
             _this.grafOver = true;
         })
+        // @ts-ignore
         document.getElementById(this._container.id + '_' + "graf").addEventListener('mouseout', function (event) {
             _this.grafOver = false;
         })
+
         document.addEventListener('keydown', function (event) {
 
             if ((event.keyCode == 37) && (_this.leftPressed == false) && (_this.grafOver == true)) {
@@ -439,10 +449,13 @@ class PlotterView {
                 _this.dt = _this.olddt;
             }
         });
+        // @ts-ignore
         document.getElementById(this._container.id + '_' + "graf").addEventListener('wheel', (event) => {
             event.preventDefault();
-            let leftStep = _this.grafMouseX1 / parseInt(document.getElementById(this._container.id + '_' + 'graf').style.width, 10) * _this.scrollSize;
-            let rightStep = (parseInt(document.getElementById(this._container.id + '_' + 'graf').style.width, 10) - _this.grafMouseX1) / parseInt(document.getElementById(this._container.id + '_' + 'graf').style.width, 10) * _this.scrollSize;;
+            // @ts-ignore
+            let leftStep = _this.grafMouseX1 / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;
+            // @ts-ignore
+            let rightStep = (document.getElementById(this._container.id + '_' + 'graf').width - _this.grafMouseX1) / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;;
             //see more
             if (event.deltaY > 0) {
                 this.needFrame = true;
@@ -454,12 +467,14 @@ class PlotterView {
                 _this.t1 = _this.t1 - rightStep;
             }
         });
+        // @ts-ignore
         document.getElementById(this._container.id + '_' + "graf").addEventListener('mousemove', (event) => {
             _this.grafMouseX0 = _this.grafMouseX1;
             _this.grafMouseX1 = event.offsetX;
             if (_this.mouseDown == true) {
                 this.needFrame = true;
-                let deltaOffset = (_this.grafMouseX1 - _this.grafMouseX0) * (_this.t1 - _this.t0) / parseInt(document.getElementById(this._container.id + '_' + 'graf').style.width, 10);
+                // @ts-ignore
+                let deltaOffset = (_this.grafMouseX1 - _this.grafMouseX0) * (_this.t1 - _this.t0) / document.getElementById(this._container.id + '_' + 'graf').width;
                 _this.t0 = _this.t0 - deltaOffset;
                 _this.t1 = _this.t1 - deltaOffset;
             }

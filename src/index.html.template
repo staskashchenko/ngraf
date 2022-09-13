@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+  <div id='root1'></div>
+  <div id='root2'></div>
+  <p style="margin-left: 1233px; position: absolute; top: -15px;">Peroid(T):</p>
+  <p style="margin-left: 1187px; position: absolute; top: 7px;">Frame peroid(dt):</p>
+  <p style="margin-left: 1178px; position: absolute; top: 28px;">Animation step(u):</p>
+  <p style="margin-left: 1145px; position: absolute; top: 48px;">WebSocket peroid(wst):</p>
+  <p style="margin-left: 1240px; position: absolute; top: 68px;">gridStep:</p>
+  <p style="margin-left: 1199px; position: absolute; top: 88px;">Left border(t0):</p>
+  <p style="margin-left: 1190px; position: absolute; top: 110px;">Right border(t1):</p>
+  <p style="margin-left: 1226px; position: absolute; top: 155px;">Animation:</p>
+  <p style="margin-left: 1222px; position: absolute; top: 177px;">WebSocket:</p>
+  <p style="margin-left: 1207px; position: absolute; top: 197px;">Scrolling step:</p>
+  <p style="margin-left: 1239px; position: absolute; top: 217px;">Key step:</p>
+  <div id="input" style="width: 400px; margin-left: 1300px; position: absolute; top: 0px;">
+    <form name="inT">
+      <input id="inT" type="text" name="message" placeholder="input T" value="5000" />
+      <input type="submit" value="submit" />
+    </form>
+    <form name="indt">
+      <input id="indt" type="text" name="message" placeholder="input dt" value="5" />
+      <input type="submit" value="submit" />
+    </form>
+    <form name="inu">
+      <input id="inu" type="text" name="message" placeholder="input u" value="10" />
+      <input type="submit" value="submit" />
+    </form>
+    <form name="inwst">
+      <input id="inwst" type="text" name="message" placeholder="input wst" value="200" />
+      <input type="submit" value="submit" />
+    </form>
+    <form name="ingridStep">
+      <input id="ingridStep" type="text" name="message" placeholder="input gridStep" value="1000" />
+      <input type="submit" value="submit" />
+    </form>
+    <form name="int0">
+      <input id="int0" type="text" name="message" placeholder="input t0" />
+      <input type="submit" value="submit" />
+    </form>
+    <form name="int1">
+      <input id="int1" type="text" name="message" placeholder="input t1" />
+      <input type="submit" value="submit" />
+    </form>
+    <input type="button" id="sett0t1" value="set t0 and t1" />
+    <input type="button" id="animSwich" value="Turn off" style="margin-left: -90px; position: absolute; top: 170px;" />
+    <input type="button" id="wsSwich" value="Turn off" style="margin-left: -90px; position: absolute; top: 192px;" />
+    <form name="inscrollsize">
+      <input id="inscrollsize" type="text" name="message" placeholder="input scrollsize" style="margin-top: 45px;"
+        value="200" />
+      <input type="submit" value="submit" />
+    </form>
+    <form name="inkeyStep">
+      <input id="inkeyStep" type="text" name="message" placeholder="input keyStep" style="margin-top: 0px;"
+        value="30" />
+      <input type="submit" value="submit" />
+    </form>
+  </div>
+</body>
+
+</html>
