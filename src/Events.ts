@@ -1,16 +1,16 @@
 class Events {
-    subEvents: Map<string, Array<Function>>;
+    private subEvents: Map<string, Array<Function>>;
     constructor() {
         this.subEvents = new Map<string, Array<Function>>();
     }
-    dispatch(eventType: string, eventResult: any): void {
+    public dispatch(eventType: string, eventResult: any): void {
 
         let functions: Array<Function> = this.subEvents.get(eventType) || [];
         for (let i: number = 0; i < functions.length; i++) {
             functions[i](eventResult);
         }
     }
-    on(eventType: string, eventFunc: Function): void {
+    public on(eventType: string, eventFunc: Function): void {
         if (this.subEvents.has(eventType) == false) {
             this.subEvents.set(eventType, [eventFunc]);
         } else {

@@ -1,11 +1,3 @@
-/*
- * ATTENTION: The "eval" devtool has been used (maybe by default in mode: "development").
- * This devtool is neither made for production nor for readable output files.
- * It uses "eval()" calls to create a separate source file in the browser devtools.
- * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
- * or disable the default devtool with "devtool: false".
- * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
- */
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
@@ -16,7 +8,33 @@
   \***********************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"Events\": () => (/* binding */ Events)\n/* harmony export */ });\nclass Events {\r\n    constructor() {\r\n        this.subEvents = new Map();\r\n    }\r\n    dispatch(eventType, eventResult) {\r\n        let functions = this.subEvents.get(eventType) || [];\r\n        for (let i = 0; i < functions.length; i++) {\r\n            functions[i](eventResult);\r\n        }\r\n    }\r\n    on(eventType, eventFunc) {\r\n        if (this.subEvents.has(eventType) == false) {\r\n            this.subEvents.set(eventType, [eventFunc]);\r\n        }\r\n        else {\r\n            let functions = this.subEvents.get(eventType) || [];\r\n            functions.push(eventFunc);\r\n            this.subEvents.set(eventType, functions);\r\n        }\r\n    }\r\n}\r\n\r\n\n\n//# sourceURL=webpack://ngraf/./src/Events.ts?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "Events": () => (/* binding */ Events)
+/* harmony export */ });
+class Events {
+    constructor() {
+        this.subEvents = new Map();
+    }
+    dispatch(eventType, eventResult) {
+        let functions = this.subEvents.get(eventType) || [];
+        for (let i = 0; i < functions.length; i++) {
+            functions[i](eventResult);
+        }
+    }
+    on(eventType, eventFunc) {
+        if (this.subEvents.has(eventType) == false) {
+            this.subEvents.set(eventType, [eventFunc]);
+        }
+        else {
+            let functions = this.subEvents.get(eventType) || [];
+            functions.push(eventFunc);
+            this.subEvents.set(eventType, functions);
+        }
+    }
+}
+
+
 
 /***/ }),
 
@@ -26,7 +44,18 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"MyPoint\": () => (/* binding */ MyPoint)\n/* harmony export */ });\nclass MyPoint {\r\n    constructor(params) {\r\n        this.date = params.date || new Date(); //times\r\n        this.value = params.value || 0; //values\r\n    }\r\n}\r\n\r\n\n\n//# sourceURL=webpack://ngraf/./src/MyPoint.ts?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MyPoint": () => (/* binding */ MyPoint)
+/* harmony export */ });
+class MyPoint {
+    constructor(params) {
+        this.date = params.date || new Date(); //times
+        this.value = params.value || 0; //values
+    }
+}
+
+
 
 /***/ }),
 
@@ -36,7 +65,35 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"MyTimer\": () => (/* binding */ MyTimer)\n/* harmony export */ });\nclass MyTimer {\r\n    constructor(params) {\r\n        this.func = params.func; //function\r\n        this.delay = params.delay || 1; //delay\r\n        this.launchTime = (new Date()).getTime() + this.delay; //function launch time\r\n        this.isActiv = true; //is timer activ\r\n    }\r\n    _timer() {\r\n        if (this.isActiv == true) {\r\n            let now = (new Date()).getTime();\r\n            if (this.launchTime <= now && (this.delay != 0)) {\r\n                this.func();\r\n                this.launchTime = now + this.delay;\r\n            }\r\n            requestAnimationFrame(() => {\r\n                this._timer();\r\n            });\r\n        }\r\n    }\r\n    launch() {\r\n        this._timer();\r\n    }\r\n}\r\n\r\n\n\n//# sourceURL=webpack://ngraf/./src/MyTimer.ts?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MyTimer": () => (/* binding */ MyTimer)
+/* harmony export */ });
+class MyTimer {
+    constructor(params) {
+        this.func = params.func; //function
+        this.delay = params.delay || 1; //delay
+        this.launchTime = (new Date()).getTime() + this.delay; //function launch time
+        this.isActiv = true; //is timer activ
+    }
+    _timer() {
+        if (this.isActiv == true) {
+            let now = (new Date()).getTime();
+            if (this.launchTime <= now && (this.delay != 0)) {
+                this.func();
+                this.launchTime = now + this.delay;
+            }
+            requestAnimationFrame(() => {
+                this._timer();
+            });
+        }
+    }
+    launch() {
+        this._timer();
+    }
+}
+
+
 
 /***/ }),
 
@@ -46,7 +103,23 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*****************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"PlotterModel\": () => (/* binding */ PlotterModel)\n/* harmony export */ });\nclass PlotterModel {\r\n    constructor(params) {\r\n        this.name = params.name || \"\";\r\n        this.points = params.points || new Array(); //model points\r\n        this._socket = params.socket;\r\n        this._socket.events.on(\"receive\", this._onReceive.bind(this));\r\n    }\r\n    _onReceive(poi) {\r\n        this.points.push(poi);\r\n    }\r\n}\r\n\r\n\n\n//# sourceURL=webpack://ngraf/./src/PlotterModel.ts?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "PlotterModel": () => (/* binding */ PlotterModel)
+/* harmony export */ });
+class PlotterModel {
+    constructor(params) {
+        this.name = params.name || "";
+        this.points = params.points || new Array(); //model points
+        this._socket = params.socket;
+        this._socket.events.on("receive", this._onReceive.bind(this));
+    }
+    _onReceive(poi) {
+        this.points.push(poi);
+    }
+}
+
+
 
 /***/ }),
 
@@ -56,7 +129,442 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \****************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"PlotterView\": () => (/* binding */ PlotterView)\n/* harmony export */ });\n/* harmony import */ var _MyTimer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MyTimer */ \"./src/MyTimer.ts\");\n\r\nclass PlotterView {\r\n    constructor(params) {\r\n        // @ts-ignore\r\n        this._container = document.getElementById(params.container);\r\n        this.model = params.model;\r\n        this.oPointsLength = this.model.points.length;\r\n        this.baseGridPoint = null;\r\n        this.gridStep = 1000; //grid step in milliseconds\r\n        this.leftPressed = false;\r\n        this.rightPressed = false;\r\n        this.T = 5000; //period between t0 & t1\r\n        this.dt = 5; //period between frames\r\n        this.olddt = this.dt; //old dt (need 4 key animation)\r\n        this.u = 10; //delta value of changing t0 and t1 every dt\r\n        this.oldu = this.u; //old u\r\n        this.t0 = (new Date()).getTime(); //left visible border of the grafic\r\n        this.t1 = this.t0 + this.T; //right visible border of the grafic\r\n        this.animation = true; //animation trigger\r\n        this.needFrame = true; //is new frame needed\r\n        this.clasterBorder = 18; //maximum number of points before clasterisation\r\n        this.oldanimation = this.animation; //old animation trigger(need 4 keys control)\r\n        this.scrollSize = 400; //scroll size(how much milliseconds will be zoomed in 1 wheel step)\r\n        this.keyStep = 30; //default key step(how much milliseconds will be scrolled in 1 keyhold step)\r\n        this.grafOver = false; //is mouse over graf canvas\r\n        this.grafMouseX0 = 0; //mouse X over graf before\r\n        this.grafMouseX1 = 0; //mouse X over graf now\r\n        this.mouseDown = false; //is mouse down\r\n        this.uTimer = new _MyTimer__WEBPACK_IMPORTED_MODULE_0__.MyTimer({\r\n            func: this.dtuChanger.bind(this),\r\n            delay: this.dt\r\n        });\r\n        this.graph = this._container; //root el init\r\n        //this.leftCanvas = PlotterView.createElement('leftCanvas');//left canvas init\r\n        //size of main div\r\n        this.grafRootDivWidth = 1150;\r\n        this.grafRootDivHeight = 700;\r\n        // @ts-ignore\r\n        this.graf = PlotterView.createElement('canvas', this._container.id + '_' + 'graf'); //graf canvas create\r\n        //graf canvas local cords\r\n        this.gcordX = this.graf.width / 1000;\r\n        this.gcordY = this.graf.height / 1000;\r\n        // @ts-ignore\r\n        this.gctx = this.graf.getContext(\"2d\"); //graf brush init\r\n        // @ts-ignore\r\n        this.left = PlotterView.createElement('canvas', this._container.id + '_' + 'left'); //left canvas init\r\n        //left canvas local cords\r\n        this.lcordX = this.left.width / 1000;\r\n        this.lcordY = this.left.height / 1000;\r\n        // @ts-ignore\r\n        this.lctx = this.left.getContext(\"2d\"); //left brush init\r\n        // @ts-ignore\r\n        this.bottom = PlotterView.createElement('canvas', this._container.id + '_' + 'bottom'); //bottom canvas init\r\n        //bottom canvas local cords\r\n        this.bcordX = this.bottom.width / 1000;\r\n        this.bcordY = this.bottom.height / 1000;\r\n        // @ts-ignore\r\n        this.bctx = this.bottom.getContext(\"2d\"); //bottom brush init\r\n    }\r\n    //element creation\r\n    static createElement(tag, className) {\r\n        const element = document.createElement(tag);\r\n        if (className)\r\n            element.classList.add(className);\r\n        return element;\r\n    }\r\n    //element link geting\r\n    static getElement(selector) {\r\n        const element = document.getElementById(selector);\r\n        return element;\r\n    }\r\n    //right way to set T with recalculation of t0 t1\r\n    setT(newT) {\r\n        this.needFrame = true;\r\n        this.T = newT;\r\n        this.t1 = this.t0 + this.T;\r\n    }\r\n    //right way to set t0 with recalculation of t1 or T\r\n    sett0(newt0) {\r\n        this.needFrame = true;\r\n        this.t0 = newt0;\r\n        if (this.t1 > this.t0) {\r\n            this.T = this.t1 - this.t0;\r\n        }\r\n        else if (this.t1 < this.t0) {\r\n            this.t1 = this.t0 + this.T;\r\n        }\r\n    }\r\n    //right way to set t1 with recalculation of t0 or T\r\n    sett1(newt1) {\r\n        this.needFrame = true;\r\n        this.t1 = newt1;\r\n        if (this.t1 > this.t0) {\r\n            this.T = this.t1 - this.t0;\r\n        }\r\n        else if (this.t1 < this.t0) {\r\n            this.t0 = this.t1 - this.T;\r\n        }\r\n    }\r\n    //right way to set t0 and t1 with recalculation T\r\n    sett0t1(newt0, newt1) {\r\n        if (newt0 < newt1) {\r\n            this.needFrame = true;\r\n            this.t0 = newt0;\r\n            this.t1 = newt1;\r\n            this.T = newt1 - newt0;\r\n        }\r\n    }\r\n    //stop anim\r\n    stopAnim() {\r\n        this.animation = false;\r\n    }\r\n    //start anim\r\n    startAnim() {\r\n        this.animation = true;\r\n    }\r\n    //init(div and canvases create)\r\n    baseInit() {\r\n        this._container.style.width = this.grafRootDivWidth + 'px';\r\n        this._container.style.height = this.grafRootDivHeight + 'px';\r\n        this.graf.id = this._container.id + '_' + 'graf';\r\n        this.gcordX = this.graf.width / 300;\r\n        this.gcordY = this.graf.height / 300;\r\n        this.left.id = this._container.id + '_' + 'left';\r\n        this.lcordX = this.left.width / 300;\r\n        this.lcordY = this.left.height / 300;\r\n        this.bottom.id = this._container.id + '_' + 'bottom';\r\n        this.bcordX = this.bottom.width / 300;\r\n        this.bcordY = this.bottom.height / 300;\r\n        this._container.append(this.left, this.graf, this.bottom);\r\n        // @ts-ignore\r\n        document.getElementById(this._container.id + '_' + 'graf').width = this.grafRootDivWidth / 1.15;\r\n        // @ts-ignore\r\n        document.getElementById(this._container.id + '_' + 'graf').height = this.grafRootDivHeight / 1.4;\r\n        // @ts-ignore\r\n        document.getElementById(this._container.id + '_' + 'left').width = this.grafRootDivWidth / 7.67;\r\n        // @ts-ignore\r\n        document.getElementById(this._container.id + '_' + 'left').height = this.grafRootDivHeight / 1.4;\r\n        // @ts-ignore\r\n        document.getElementById(this._container.id + '_' + 'bottom').width = this.grafRootDivWidth / 1.15;\r\n        // @ts-ignore\r\n        document.getElementById(this._container.id + '_' + 'bottom').height = this.grafRootDivHeight / 3.5;\r\n        // @ts-ignore\r\n        document.getElementById(this._container.id + '_' + 'bottom').style.marginLeft = \"150px\";\r\n        this.bcordY = this.bcordY / 2.5;\r\n    }\r\n    //time adapt(transforms date milliseconds format to String visual format)\r\n    timeAdapt(milsecs) {\r\n        var hh = String(Math.floor(milsecs / 3600000));\r\n        var mm = String(Math.floor((milsecs - Number(hh) * 3600000) / 60000));\r\n        var ss = String(Math.floor((milsecs - Number(hh) * 3600000 - Number(mm) * 60000) / 1000));\r\n        hh = String((Number(hh) + 3) % 24);\r\n        if (String(hh).length == 1) {\r\n            hh = \"0\" + hh;\r\n        }\r\n        if (String(mm).length == 1) {\r\n            mm = \"0\" + mm;\r\n        }\r\n        if (String(ss).length == 1) {\r\n            ss = \"0\" + ss;\r\n        }\r\n        return \"[\" + hh + \":\" + mm + \":\" + ss + \"]\";\r\n    }\r\n    //x cord calculation(needs for x calculation of each point each iteration)\r\n    /*lxCount(p) {\r\n        return (this.model.points[i].date - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);\r\n    }*/\r\n    //draw(x and y basis lines draw)\r\n    basisDraw() {\r\n        this.gctx.beginPath();\r\n        this.gctx.strokeStyle = \"black\";\r\n        this.gctx.lineWidth = 3;\r\n        this.gctx.moveTo(0, 0);\r\n        this.gctx.lineTo(0, 1000 * this.gcordY);\r\n        this.gctx.lineTo(1000 * this.gcordX, 1000 * this.gcordY);\r\n        this.gctx.stroke();\r\n    }\r\n    //horisontal lines draw\r\n    xLinesDraw() {\r\n        this.gctx.beginPath();\r\n        this.gctx.strokeStyle = \"#C0C0C0\";\r\n        this.gctx.lineWidth = 1;\r\n        for (let i = 0; i < 10; i++) {\r\n            this.gctx.moveTo(0, i * 100 * this.gcordY);\r\n            this.gctx.lineTo(1000 * this.gcordX, i * 100 * this.gcordY);\r\n        }\r\n        this.gctx.stroke();\r\n    }\r\n    //vertical lines draw\r\n    yGridDraw() {\r\n        this.gctx.beginPath();\r\n        this.gctx.strokeStyle = \"#C0C0C0\";\r\n        this.gctx.lineWidth = 1;\r\n        var gridMilsec;\r\n        var gridX;\r\n        for (let i = 0; i < (this.t1 - this.t0) / this.gridStep + 2; i++) {\r\n            gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;\r\n            gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);\r\n            this.gctx.moveTo(gridX, 0);\r\n            this.gctx.lineTo(gridX, 1000 * this.gcordY);\r\n        }\r\n        this.gctx.stroke();\r\n        this.bctx.beginPath();\r\n        this.bctx.strokeStyle = \"black\";\r\n        this.bctx.textAlign = \"center\";\r\n        this.bctx.lineWidth = 1;\r\n        this.bctx.font = \"10px Verdana\";\r\n        for (let i = 0; i < (this.t1 - this.t0) / this.gridStep + 2; i++) {\r\n            gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;\r\n            if (this.baseGridPoint == null) {\r\n                this.baseGridPoint = gridMilsec;\r\n            }\r\n            gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);\r\n            let skipI = Math.floor((this.t1 - this.t0) / (this.gridStep * this.clasterBorder));\r\n            gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;\r\n            gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);\r\n            if (skipI > 0) {\r\n                if (gridMilsec % ((skipI + 1) * this.gridStep) == this.baseGridPoint % ((skipI + 1) * this.gridStep)) {\r\n                    this.bctx.strokeText(this.timeAdapt(gridMilsec), gridX, 60 * this.bcordY);\r\n                    i += skipI;\r\n                }\r\n            }\r\n            else {\r\n                this.bctx.strokeText(this.timeAdapt(gridMilsec), gridX, 60 * this.bcordY);\r\n            }\r\n            this.bctx.stroke();\r\n        }\r\n        this.bctx.stroke();\r\n    }\r\n    //graf line draw\r\n    grafLineDraw() {\r\n        var i0 = 0;\r\n        var i1 = 0;\r\n        //console.log(this.model.points);\r\n        for (let i = 0; i < this.model.points.length - 1; i++) {\r\n            if ((this.t0 >= Number(this.model.points[i].date)) && (this.t0 <= Number(this.model.points[i + 1].date))) {\r\n                i0 = i;\r\n            }\r\n            if ((this.t1 >= Number(this.model.points[i].date)) && (this.t1 <= Number(this.model.points[i + 1].date))) {\r\n                i1 = i + 1;\r\n            }\r\n            else {\r\n                i1 = this.model.points.length - 1;\r\n            }\r\n        }\r\n        var lx0;\r\n        var lY0;\r\n        var lx1;\r\n        var lY1;\r\n        this.gctx.beginPath();\r\n        this.gctx.strokeStyle = \"black\";\r\n        this.gctx.lineWidth = 2;\r\n        this.gctx.font = \"15px Verdana\";\r\n        for (let i = i0; i < i1; i++) {\r\n            lx0 = (Number(this.model.points[i].date) - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);\r\n            lY0 = (1000 - 10 * this.model.points[i].value) * this.gcordY;\r\n            lx1 = (Number(this.model.points[i + 1].date) - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);\r\n            lY1 = (1000 - 10 * this.model.points[i + 1].value) * this.gcordY;\r\n            this.gctx.strokeText(\"[ \" + this.model.points[i].value + \" ]\", lx0, lY0);\r\n            this.gctx.moveTo(lx0, lY0);\r\n            this.gctx.lineTo(lx1, lY1);\r\n        }\r\n        this.gctx.stroke();\r\n    }\r\n    //left draw\r\n    leftGreyDraw() {\r\n        this.lctx.beginPath();\r\n        this.lctx.strokeStyle = \"black\";\r\n        this.lctx.lineWidth = 2;\r\n        this.lctx.font = \"15px Verdana\";\r\n        this.lctx.fillText(String(0), 135 * this.lcordX, 995 * this.lcordY);\r\n        for (let i = 1; i < 10; i++) {\r\n            this.lctx.fillText(String(100 * i), 129 * this.lcordX, (1000 - 100 * i) * this.lcordY);\r\n        }\r\n        this.lctx.fillText(String(100), 120.5 * this.lcordX, 23 * this.lcordY);\r\n        this.lctx.stroke();\r\n    }\r\n    //cleans the frame\r\n    cleanFrame() {\r\n        this.gctx.clearRect(0, 0, this.graf.width, this.graf.height);\r\n        this.bctx.clearRect(0, 0, this.bottom.width, this.bottom.height);\r\n    }\r\n    //checks is there a new point in the model since last frame\r\n    isNewPoint() {\r\n        if (this.model.points.length > 1) {\r\n            if ((this.oPointsLength < this.model.points.length) && (Number(this.model.points[this.model.points.length - 2].date) < this.t1)) {\r\n                this.oPointsLength = this.model.points.length;\r\n                this.needFrame = true;\r\n            }\r\n        }\r\n    }\r\n    //1 frame draw\r\n    frame() {\r\n        this.isNewPoint();\r\n        if (this.needFrame == true) {\r\n            //console.log(\"new frame\");\r\n            this.cleanFrame();\r\n            this.xLinesDraw();\r\n            this.yGridDraw();\r\n            //this.yLinesDraw();\r\n            this.grafLineDraw();\r\n            this.basisDraw();\r\n            //this.bottomDraw();\r\n            this.needFrame = false;\r\n        }\r\n        requestAnimationFrame(() => { this.frame(); });\r\n    }\r\n    //changer of t0 and t1 on u every dt milliseconds\r\n    dtuChanger() {\r\n        if ((this.animation == true) && (this.dt > 0)) {\r\n            this.needFrame = true;\r\n            this.t0 = this.t0 + this.u;\r\n            this.t1 = this.t1 + this.u;\r\n            this.uTimer.delay = this.dt;\r\n        }\r\n        else if (this.dt == 0) {\r\n            this.uTimer.delay = 10;\r\n        }\r\n    }\r\n    //left key press\r\n    leftKeyPress() {\r\n        this.needFrame = true;\r\n        this.t0 = this.t0 - this.u;\r\n        this.t1 = this.t1 - this.u;\r\n    }\r\n    //right key press\r\n    rightKeyPress() {\r\n        this.needFrame = true;\r\n        this.t0 = this.t0 + this.u;\r\n        this.t1 = this.t1 + this.u;\r\n    }\r\n    //keys control\r\n    controlInit() {\r\n        let _this = this;\r\n        // @ts-ignore\r\n        document.getElementById(this._container.id + '_' + \"graf\").addEventListener('mouseover', function (event) {\r\n            _this.grafOver = true;\r\n        });\r\n        // @ts-ignore\r\n        document.getElementById(this._container.id + '_' + \"graf\").addEventListener('mouseout', function (event) {\r\n            _this.grafOver = false;\r\n        });\r\n        document.addEventListener('keydown', function (event) {\r\n            if ((event.keyCode == 37) && (_this.leftPressed == false) && (_this.grafOver == true)) {\r\n                _this.needFrame = true;\r\n                _this.leftPressed = true;\r\n                _this.oldu = _this.u;\r\n                _this.u = -1 * _this.keyStep;\r\n                _this.oldanimation = _this.animation;\r\n                _this.animation = true;\r\n                _this.olddt = _this.dt;\r\n                _this.dt = 5;\r\n            }\r\n            if ((event.keyCode == 39) && (_this.rightPressed == false) && (_this.grafOver == true)) {\r\n                _this.needFrame = true;\r\n                _this.rightPressed = true;\r\n                _this.oldu = _this.u;\r\n                _this.u = _this.keyStep;\r\n                _this.oldanimation = _this.animation;\r\n                _this.animation = true;\r\n                _this.olddt = _this.dt;\r\n                _this.dt = 5;\r\n            }\r\n        });\r\n        document.addEventListener('keyup', function (event) {\r\n            if ((event.keyCode == 37) && (_this.leftPressed == true)) {\r\n                _this.needFrame = true;\r\n                _this.leftPressed = false;\r\n                _this.u = _this.oldu;\r\n                _this.animation = _this.oldanimation;\r\n                _this.dt = _this.olddt;\r\n            }\r\n            if ((event.keyCode == 39) && (_this.rightPressed == true)) {\r\n                _this.needFrame = true;\r\n                _this.rightPressed = false;\r\n                _this.u = _this.oldu;\r\n                _this.animation = _this.oldanimation;\r\n                _this.dt = _this.olddt;\r\n            }\r\n        });\r\n        // @ts-ignore\r\n        document.getElementById(this._container.id + '_' + \"graf\").addEventListener('wheel', (event) => {\r\n            event.preventDefault();\r\n            // @ts-ignore\r\n            let leftStep = _this.grafMouseX1 / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;\r\n            // @ts-ignore\r\n            let rightStep = (document.getElementById(this._container.id + '_' + 'graf').width - _this.grafMouseX1) / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;\r\n            ;\r\n            //see more\r\n            if (event.deltaY > 0) {\r\n                this.needFrame = true;\r\n                _this.t0 = _this.t0 - leftStep;\r\n                _this.t1 = _this.t1 + rightStep;\r\n            }\r\n            else if (event.deltaY < 0) {\r\n                this.needFrame = true;\r\n                _this.t0 = _this.t0 + leftStep;\r\n                _this.t1 = _this.t1 - rightStep;\r\n            }\r\n        });\r\n        // @ts-ignore\r\n        document.getElementById(this._container.id + '_' + \"graf\").addEventListener('mousemove', (event) => {\r\n            _this.grafMouseX0 = _this.grafMouseX1;\r\n            _this.grafMouseX1 = event.offsetX;\r\n            if (_this.mouseDown == true) {\r\n                this.needFrame = true;\r\n                // @ts-ignore\r\n                let deltaOffset = (_this.grafMouseX1 - _this.grafMouseX0) * (_this.t1 - _this.t0) / document.getElementById(this._container.id + '_' + 'graf').width;\r\n                _this.t0 = _this.t0 - deltaOffset;\r\n                _this.t1 = _this.t1 - deltaOffset;\r\n            }\r\n        });\r\n        document.addEventListener('mousedown', (event) => {\r\n            _this.mouseDown = true;\r\n        });\r\n        document.addEventListener('mouseup', (event) => {\r\n            _this.mouseDown = false;\r\n        });\r\n    }\r\n    //graf animation launcher\r\n    launcher() {\r\n        this.baseInit();\r\n        this.leftGreyDraw();\r\n        this.dtuChanger();\r\n        this.uTimer.launch();\r\n        this.frame();\r\n        this.controlInit();\r\n    }\r\n}\r\n\r\n\n\n//# sourceURL=webpack://ngraf/./src/PlotterView.ts?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "PlotterView": () => (/* binding */ PlotterView)
+/* harmony export */ });
+/* harmony import */ var _MyTimer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MyTimer */ "./src/MyTimer.ts");
+
+class PlotterView {
+    constructor(params) {
+        // @ts-ignore
+        this._container = document.getElementById(params.container);
+        this.model = params.model;
+        this.oPointsLength = this.model.points.length;
+        this.baseGridPoint = null;
+        this.gridStep = 1000; //grid step in milliseconds
+        this.leftPressed = false;
+        this.rightPressed = false;
+        this.T = 5000; //period between t0 & t1
+        this.dt = 5; //period between frames
+        this.olddt = this.dt; //old dt (need 4 key animation)
+        this.u = 10; //delta value of changing t0 and t1 every dt
+        this.oldu = this.u; //old u
+        this.t0 = (new Date()).getTime(); //left visible border of the grafic
+        this.t1 = this.t0 + this.T; //right visible border of the grafic
+        this.animation = true; //animation trigger
+        this.needFrame = true; //is new frame needed
+        this.clasterBorder = 18; //maximum number of points before clasterisation
+        this.oldanimation = this.animation; //old animation trigger(need 4 keys control)
+        this.scrollSize = 400; //scroll size(how much milliseconds will be zoomed in 1 wheel step)
+        this.keyStep = 30; //default key step(how much milliseconds will be scrolled in 1 keyhold step)
+        this.grafOver = false; //is mouse over graf canvas
+        this.grafMouseX0 = 0; //mouse X over graf before
+        this.grafMouseX1 = 0; //mouse X over graf now
+        this.mouseDown = false; //is mouse down
+        this.uTimer = new _MyTimer__WEBPACK_IMPORTED_MODULE_0__.MyTimer({
+            func: this._dtuChanger.bind(this),
+            delay: this.dt
+        });
+        this.graph = this._container; //root el init
+        //this.leftCanvas = PlotterView.createElement('leftCanvas');//left canvas init
+        //size of main div
+        this.grafRootDivWidth = 1150;
+        this.grafRootDivHeight = 700;
+        // @ts-ignore
+        this.graf = PlotterView.createElement('canvas', this._container.id + '_' + 'graf'); //graf canvas create
+        //graf canvas local cords
+        this.gcordX = this.graf.width / 1000;
+        this.gcordY = this.graf.height / 1000;
+        // @ts-ignore
+        this.gctx = this.graf.getContext("2d"); //graf brush init
+        // @ts-ignore
+        this.left = PlotterView.createElement('canvas', this._container.id + '_' + 'left'); //left canvas init
+        //left canvas local cords
+        this.lcordX = this.left.width / 1000;
+        this.lcordY = this.left.height / 1000;
+        // @ts-ignore
+        this.lctx = this.left.getContext("2d"); //left brush init
+        // @ts-ignore
+        this.bottom = PlotterView.createElement('canvas', this._container.id + '_' + 'bottom'); //bottom canvas init
+        //bottom canvas local cords
+        this.bcordX = this.bottom.width / 1000;
+        this.bcordY = this.bottom.height / 1000;
+        // @ts-ignore
+        this.bctx = this.bottom.getContext("2d"); //bottom brush init
+    }
+    //element creation
+    static createElement(tag, className) {
+        const element = document.createElement(tag);
+        if (className)
+            element.classList.add(className);
+        return element;
+    }
+    //element link geting
+    static getElement(selector) {
+        const element = document.getElementById(selector);
+        return element;
+    }
+    //right way to set T with recalculation of t0 t1
+    setT(newT) {
+        this.needFrame = true;
+        this.T = newT;
+        this.t1 = this.t0 + this.T;
+    }
+    //right way to set t0 with recalculation of t1 or T
+    sett0(newt0) {
+        this.needFrame = true;
+        this.t0 = newt0;
+        if (this.t1 > this.t0) {
+            this.T = this.t1 - this.t0;
+        }
+        else if (this.t1 < this.t0) {
+            this.t1 = this.t0 + this.T;
+        }
+    }
+    //right way to set t1 with recalculation of t0 or T
+    sett1(newt1) {
+        this.needFrame = true;
+        this.t1 = newt1;
+        if (this.t1 > this.t0) {
+            this.T = this.t1 - this.t0;
+        }
+        else if (this.t1 < this.t0) {
+            this.t0 = this.t1 - this.T;
+        }
+    }
+    //right way to set t0 and t1 with recalculation T
+    sett0t1(newt0, newt1) {
+        if (newt0 < newt1) {
+            this.needFrame = true;
+            this.t0 = newt0;
+            this.t1 = newt1;
+            this.T = newt1 - newt0;
+        }
+    }
+    //stop anim
+    stopAnim() {
+        this.animation = false;
+    }
+    //start anim
+    startAnim() {
+        this.animation = true;
+    }
+    //init(div and canvases create)
+    _baseInit() {
+        this._container.style.width = this.grafRootDivWidth + 'px';
+        this._container.style.height = this.grafRootDivHeight + 'px';
+        this.graf.id = this._container.id + '_' + 'graf';
+        this.gcordX = this.graf.width / 300;
+        this.gcordY = this.graf.height / 300;
+        this.left.id = this._container.id + '_' + 'left';
+        this.lcordX = this.left.width / 300;
+        this.lcordY = this.left.height / 300;
+        this.bottom.id = this._container.id + '_' + 'bottom';
+        this.bcordX = this.bottom.width / 300;
+        this.bcordY = this.bottom.height / 300;
+        this._container.append(this.left, this.graf, this.bottom);
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'graf').width = this.grafRootDivWidth / 1.15;
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'graf').height = this.grafRootDivHeight / 1.4;
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'left').width = this.grafRootDivWidth / 7.67;
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'left').height = this.grafRootDivHeight / 1.4;
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'bottom').width = this.grafRootDivWidth / 1.15;
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'bottom').height = this.grafRootDivHeight / 3.5;
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + 'bottom').style.marginLeft = "150px";
+        this.bcordY = this.bcordY / 2.5;
+    }
+    //time adapt(transforms date milliseconds format to String visual format)
+    _timeAdapt(milsecs) {
+        var hh = String(Math.floor(milsecs / 3600000));
+        var mm = String(Math.floor((milsecs - Number(hh) * 3600000) / 60000));
+        var ss = String(Math.floor((milsecs - Number(hh) * 3600000 - Number(mm) * 60000) / 1000));
+        hh = String((Number(hh) + 3) % 24);
+        if (String(hh).length == 1) {
+            hh = "0" + hh;
+        }
+        if (String(mm).length == 1) {
+            mm = "0" + mm;
+        }
+        if (String(ss).length == 1) {
+            ss = "0" + ss;
+        }
+        return "[" + hh + ":" + mm + ":" + ss + "]";
+    }
+    //x cord calculation(needs for x calculation of each point each iteration)
+    /*lxCount(p) {
+        return (this.model.points[i].date - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
+    }*/
+    //draw(x and y basis lines draw)
+    _basisDraw() {
+        this.gctx.beginPath();
+        this.gctx.strokeStyle = "black";
+        this.gctx.lineWidth = 3;
+        this.gctx.moveTo(0, 0);
+        this.gctx.lineTo(0, 1000 * this.gcordY);
+        this.gctx.lineTo(1000 * this.gcordX, 1000 * this.gcordY);
+        this.gctx.stroke();
+    }
+    //horisontal lines draw
+    _xLinesDraw() {
+        this.gctx.beginPath();
+        this.gctx.strokeStyle = "#C0C0C0";
+        this.gctx.lineWidth = 1;
+        for (let i = 0; i < 10; i++) {
+            this.gctx.moveTo(0, i * 100 * this.gcordY);
+            this.gctx.lineTo(1000 * this.gcordX, i * 100 * this.gcordY);
+        }
+        this.gctx.stroke();
+    }
+    //vertical lines draw
+    _yGridDraw() {
+        this.gctx.beginPath();
+        this.gctx.strokeStyle = "#C0C0C0";
+        this.gctx.lineWidth = 1;
+        var gridMilsec;
+        var gridX;
+        for (let i = 0; i < (this.t1 - this.t0) / this.gridStep + 2; i++) {
+            gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
+            gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
+            this.gctx.moveTo(gridX, 0);
+            this.gctx.lineTo(gridX, 1000 * this.gcordY);
+        }
+        this.gctx.stroke();
+        this.bctx.beginPath();
+        this.bctx.strokeStyle = "black";
+        this.bctx.textAlign = "center";
+        this.bctx.lineWidth = 1;
+        this.bctx.font = "10px Verdana";
+        for (let i = 0; i < (this.t1 - this.t0) / this.gridStep + 2; i++) {
+            gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
+            if (this.baseGridPoint == null) {
+                this.baseGridPoint = gridMilsec;
+            }
+            gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
+            let skipI = Math.floor((this.t1 - this.t0) / (this.gridStep * this.clasterBorder));
+            gridMilsec = Math.floor(this.t0 / this.gridStep) * this.gridStep + this.gridStep * i;
+            gridX = (gridMilsec - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
+            if (skipI > 0) {
+                if (gridMilsec % ((skipI + 1) * this.gridStep) == this.baseGridPoint % ((skipI + 1) * this.gridStep)) {
+                    this.bctx.strokeText(this._timeAdapt(gridMilsec), gridX, 60 * this.bcordY);
+                    i += skipI;
+                }
+            }
+            else {
+                this.bctx.strokeText(this._timeAdapt(gridMilsec), gridX, 60 * this.bcordY);
+            }
+            this.bctx.stroke();
+        }
+        this.bctx.stroke();
+    }
+    //graf line draw
+    _grafLineDraw() {
+        var i0 = 0;
+        var i1 = 0;
+        //console.log(this.model.points);
+        for (let i = 0; i < this.model.points.length - 1; i++) {
+            if ((this.t0 >= Number(this.model.points[i].date)) && (this.t0 <= Number(this.model.points[i + 1].date))) {
+                i0 = i;
+            }
+            if ((this.t1 >= Number(this.model.points[i].date)) && (this.t1 <= Number(this.model.points[i + 1].date))) {
+                i1 = i + 1;
+            }
+            else {
+                i1 = this.model.points.length - 1;
+            }
+        }
+        var lx0;
+        var lY0;
+        var lx1;
+        var lY1;
+        this.gctx.beginPath();
+        this.gctx.strokeStyle = "black";
+        this.gctx.lineWidth = 2;
+        this.gctx.font = "15px Verdana";
+        for (let i = i0; i < i1; i++) {
+            lx0 = (Number(this.model.points[i].date) - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
+            lY0 = (1000 - 10 * this.model.points[i].value) * this.gcordY;
+            lx1 = (Number(this.model.points[i + 1].date) - this.t0) * 1000 * this.gcordX / (this.t1 - this.t0);
+            lY1 = (1000 - 10 * this.model.points[i + 1].value) * this.gcordY;
+            this.gctx.strokeText("[ " + this.model.points[i].value + " ]", lx0, lY0);
+            this.gctx.moveTo(lx0, lY0);
+            this.gctx.lineTo(lx1, lY1);
+        }
+        this.gctx.stroke();
+    }
+    //left draw
+    _leftGreyDraw() {
+        this.lctx.beginPath();
+        this.lctx.strokeStyle = "black";
+        this.lctx.lineWidth = 2;
+        this.lctx.font = "15px Verdana";
+        this.lctx.fillText(String(0), 135 * this.lcordX, 995 * this.lcordY);
+        for (let i = 1; i < 10; i++) {
+            this.lctx.fillText(String(100 * i), 129 * this.lcordX, (1000 - 100 * i) * this.lcordY);
+        }
+        this.lctx.fillText(String(100), 120.5 * this.lcordX, 23 * this.lcordY);
+        this.lctx.stroke();
+    }
+    //cleans the frame
+    _cleanFrame() {
+        this.gctx.clearRect(0, 0, this.graf.width, this.graf.height);
+        this.bctx.clearRect(0, 0, this.bottom.width, this.bottom.height);
+    }
+    //checks is there a new point in the model since last frame
+    _isNewPoint() {
+        if (this.model.points.length > 1) {
+            if ((this.oPointsLength < this.model.points.length) && (Number(this.model.points[this.model.points.length - 2].date) < this.t1)) {
+                this.oPointsLength = this.model.points.length;
+                this.needFrame = true;
+            }
+        }
+    }
+    //1 frame draw
+    frame() {
+        this._isNewPoint();
+        if (this.needFrame == true) {
+            //console.log("new frame");
+            this._cleanFrame();
+            this._xLinesDraw();
+            this._yGridDraw();
+            //this.yLinesDraw();
+            this._grafLineDraw();
+            this._basisDraw();
+            //this.bottomDraw();
+            this.needFrame = false;
+        }
+        requestAnimationFrame(() => { this.frame(); });
+    }
+    //changer of t0 and t1 on u every dt milliseconds
+    _dtuChanger() {
+        if ((this.animation == true) && (this.dt > 0)) {
+            this.needFrame = true;
+            this.t0 = this.t0 + this.u;
+            this.t1 = this.t1 + this.u;
+            this.uTimer.delay = this.dt;
+        }
+        else if (this.dt == 0) {
+            this.uTimer.delay = 10;
+        }
+    }
+    //left key press
+    /*private leftKeyPress() {
+        this.needFrame = true;
+        this.t0 = this.t0 - this.u;
+        this.t1 = this.t1 - this.u;
+    }
+    //right key press
+    private rightKeyPress() {
+        this.needFrame = true;
+        this.t0 = this.t0 + this.u;
+        this.t1 = this.t1 + this.u;
+    }*/
+    //keys control
+    _controlInit() {
+        let _this = this;
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + "graf").addEventListener('mouseover', function (event) {
+            _this.grafOver = true;
+        });
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + "graf").addEventListener('mouseout', function (event) {
+            _this.grafOver = false;
+        });
+        document.addEventListener('keydown', function (event) {
+            if ((event.keyCode == 37) && (_this.leftPressed == false) && (_this.grafOver == true)) {
+                _this.needFrame = true;
+                _this.leftPressed = true;
+                _this.oldu = _this.u;
+                _this.u = -1 * _this.keyStep;
+                _this.oldanimation = _this.animation;
+                _this.animation = true;
+                _this.olddt = _this.dt;
+                _this.dt = 5;
+            }
+            if ((event.keyCode == 39) && (_this.rightPressed == false) && (_this.grafOver == true)) {
+                _this.needFrame = true;
+                _this.rightPressed = true;
+                _this.oldu = _this.u;
+                _this.u = _this.keyStep;
+                _this.oldanimation = _this.animation;
+                _this.animation = true;
+                _this.olddt = _this.dt;
+                _this.dt = 5;
+            }
+        });
+        document.addEventListener('keyup', function (event) {
+            if ((event.keyCode == 37) && (_this.leftPressed == true)) {
+                _this.needFrame = true;
+                _this.leftPressed = false;
+                _this.u = _this.oldu;
+                _this.animation = _this.oldanimation;
+                _this.dt = _this.olddt;
+            }
+            if ((event.keyCode == 39) && (_this.rightPressed == true)) {
+                _this.needFrame = true;
+                _this.rightPressed = false;
+                _this.u = _this.oldu;
+                _this.animation = _this.oldanimation;
+                _this.dt = _this.olddt;
+            }
+        });
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + "graf").addEventListener('wheel', (event) => {
+            event.preventDefault();
+            // @ts-ignore
+            let leftStep = _this.grafMouseX1 / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;
+            // @ts-ignore
+            let rightStep = (document.getElementById(this._container.id + '_' + 'graf').width - _this.grafMouseX1) / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;
+            ;
+            //see more
+            if (event.deltaY > 0) {
+                this.needFrame = true;
+                _this.t0 = _this.t0 - leftStep;
+                _this.t1 = _this.t1 + rightStep;
+            }
+            else if (event.deltaY < 0) {
+                this.needFrame = true;
+                _this.t0 = _this.t0 + leftStep;
+                _this.t1 = _this.t1 - rightStep;
+            }
+        });
+        // @ts-ignore
+        document.getElementById(this._container.id + '_' + "graf").addEventListener('mousemove', (event) => {
+            _this.grafMouseX0 = _this.grafMouseX1;
+            _this.grafMouseX1 = event.offsetX;
+            if (_this.mouseDown == true) {
+                this.needFrame = true;
+                // @ts-ignore
+                let deltaOffset = (_this.grafMouseX1 - _this.grafMouseX0) * (_this.t1 - _this.t0) / document.getElementById(this._container.id + '_' + 'graf').width;
+                _this.t0 = _this.t0 - deltaOffset;
+                _this.t1 = _this.t1 - deltaOffset;
+            }
+        });
+        document.addEventListener('mousedown', (event) => {
+            _this.mouseDown = true;
+        });
+        document.addEventListener('mouseup', (event) => {
+            _this.mouseDown = false;
+        });
+    }
+    //graf animation launcher
+    launcher() {
+        this._baseInit();
+        this._leftGreyDraw();
+        this._dtuChanger();
+        this.uTimer.launch();
+        this.frame();
+        this._controlInit();
+    }
+}
+
+
 
 /***/ }),
 
@@ -66,17 +574,61 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*******************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"WS\": () => (/* binding */ WS)\n/* harmony export */ });\n/* harmony import */ var _MyPoint__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MyPoint */ \"./src/MyPoint.ts\");\n/* harmony import */ var _Events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Events */ \"./src/Events.ts\");\n\r\n\r\nclass WS {\r\n    constructor() {\r\n        this._wstTimeoutId = null; //wst timeout id\r\n        this._wst = 200; //websocket period\r\n        this.active = false; //is WS active\r\n        this.events = new _Events__WEBPACK_IMPORTED_MODULE_1__.Events();\r\n    }\r\n    //random int generator for graf testing\r\n    _getRandomInt(max) {\r\n        return Math.floor(Math.random() * max * 100) / 100;\r\n    }\r\n    //generate new point\r\n    _genPoint() {\r\n        return new _MyPoint__WEBPACK_IMPORTED_MODULE_0__.MyPoint({\r\n            date: new Date(),\r\n            value: this._getRandomInt(100)\r\n        });\r\n    }\r\n    //send point to model\r\n    _dispatchPoi() {\r\n        this.events.dispatch(\"receive\", this._genPoint());\r\n    }\r\n    //get websocket period\r\n    get wst() {\r\n        return this._wst;\r\n    }\r\n    //set websocket period\r\n    set wst(val) {\r\n        this._wst = val;\r\n        this.start();\r\n    }\r\n    //start ws\r\n    start() {\r\n        this.active = true;\r\n        clearInterval(this._wstTimeoutId);\r\n        this._wstTimeoutId = setInterval(() => {\r\n            this._dispatchPoi();\r\n        }, this.wst);\r\n    }\r\n    //stop ws\r\n    stop() {\r\n        this.active = false;\r\n        clearInterval(this._wstTimeoutId);\r\n    }\r\n}\r\n\r\n\n\n//# sourceURL=webpack://ngraf/./src/WS.ts?");
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "WS": () => (/* binding */ WS)
+/* harmony export */ });
+/* harmony import */ var _MyPoint__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MyPoint */ "./src/MyPoint.ts");
+/* harmony import */ var _Events__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Events */ "./src/Events.ts");
 
-/***/ }),
 
-/***/ "./src/main.ts":
-/*!*********************!*\
-  !*** ./src/main.ts ***!
-  \*********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+class WS {
+    constructor() {
+        this._wstTimeoutId = null; //wst timeout id
+        this._wst = 200; //websocket period
+        this.active = false; //is WS active
+        this.events = new _Events__WEBPACK_IMPORTED_MODULE_1__.Events();
+    }
+    //random int generator for graf testing
+    _getRandomInt(max) {
+        return Math.floor(Math.random() * max * 100) / 100;
+    }
+    //generate new point
+    _genPoint() {
+        return new _MyPoint__WEBPACK_IMPORTED_MODULE_0__.MyPoint({
+            date: new Date(),
+            value: this._getRandomInt(100)
+        });
+    }
+    //send point to model
+    _dispatchPoi() {
+        this.events.dispatch("receive", this._genPoint());
+    }
+    //get websocket period
+    get wst() {
+        return this._wst;
+    }
+    //set websocket period
+    set wst(val) {
+        this._wst = val;
+        this.start();
+    }
+    //start ws
+    start() {
+        this.active = true;
+        clearInterval(this._wstTimeoutId);
+        this._wstTimeoutId = setInterval(() => {
+            this._dispatchPoi();
+        }, this.wst);
+    }
+    //stop ws
+    stop() {
+        this.active = false;
+        clearInterval(this._wstTimeoutId);
+    }
+}
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _PlotterModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PlotterModel */ \"./src/PlotterModel.ts\");\n/* harmony import */ var _PlotterView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PlotterView */ \"./src/PlotterView.ts\");\n/* harmony import */ var _WS__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WS */ \"./src/WS.ts\");\n\r\n\r\n\r\nvar ws = new _WS__WEBPACK_IMPORTED_MODULE_2__.WS(); //model websocket\r\nws.start();\r\nconst plotterModel1 = new _PlotterModel__WEBPACK_IMPORTED_MODULE_0__.PlotterModel({\r\n    name: \"pl-1\",\r\n    socket: ws\r\n});\r\nconst plotterModel2 = new _PlotterModel__WEBPACK_IMPORTED_MODULE_0__.PlotterModel({\r\n    name: \"pl-2\",\r\n    socket: ws\r\n});\r\nconst plotterView1 = new _PlotterView__WEBPACK_IMPORTED_MODULE_1__.PlotterView({\r\n    container: 'root1',\r\n    model: plotterModel1\r\n});\r\nplotterView1.launcher();\r\nconst plotterView2 = new _PlotterView__WEBPACK_IMPORTED_MODULE_1__.PlotterView({\r\n    container: 'root2',\r\n    model: plotterModel2\r\n});\r\nplotterView2.launcher();\r\n\n\n//# sourceURL=webpack://ngraf/./src/main.ts?");
+
 
 /***/ })
 
@@ -136,11 +688,42 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _Plo
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module can't be inlined because the eval devtool is used.
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/main.ts");
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+/*!*********************!*\
+  !*** ./src/main.ts ***!
+  \*********************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _PlotterModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PlotterModel */ "./src/PlotterModel.ts");
+/* harmony import */ var _PlotterView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PlotterView */ "./src/PlotterView.ts");
+/* harmony import */ var _WS__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./WS */ "./src/WS.ts");
+
+
+
+var ws = new _WS__WEBPACK_IMPORTED_MODULE_2__.WS(); //model websocket
+ws.start();
+const plotterModel1 = new _PlotterModel__WEBPACK_IMPORTED_MODULE_0__.PlotterModel({
+    name: "pl-1",
+    socket: ws
+});
+const plotterModel2 = new _PlotterModel__WEBPACK_IMPORTED_MODULE_0__.PlotterModel({
+    name: "pl-2",
+    socket: ws
+});
+const plotterView1 = new _PlotterView__WEBPACK_IMPORTED_MODULE_1__.PlotterView({
+    container: 'root1',
+    model: plotterModel1
+});
+plotterView1.launcher();
+const plotterView2 = new _PlotterView__WEBPACK_IMPORTED_MODULE_1__.PlotterView({
+    container: 'root2',
+    model: plotterModel2
+});
+plotterView2.launcher();
+
+})();
+
 /******/ })()
 ;
+//# sourceMappingURL=index_bundle.js.map

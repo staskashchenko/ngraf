@@ -13,7 +13,7 @@ class MyTimer {
         this.launchTime = (new Date()).getTime() + this.delay;//function launch time
         this.isActiv = true;//is timer activ
     }
-    _timer(): void {
+    private _timer(): void {
         if (this.isActiv == true) {
             let now: number = (new Date()).getTime();
             if (this.launchTime <= now && (this.delay != 0)) {
@@ -25,7 +25,7 @@ class MyTimer {
             });
         }
     }
-    launch(): void {
+    public launch(): void {
         this._timer();
     }
 }
