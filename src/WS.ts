@@ -20,10 +20,10 @@ class WS {
     }
 
     //generate new point
-    private _genPoint(): object {
+    private _genPoint(): MyPoint {
         return new MyPoint({
             date: new Date(),
-            value: this._getRandomInt(100)
+            value: this._getRandomInt(1000)
         });
     }
 
