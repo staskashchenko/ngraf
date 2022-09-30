@@ -28,6 +28,7 @@ class PlotterView {
     public animation: boolean;
     public dt: number;
 
+
     private _pixelRatio: number;
     private _container: HTMLElement;
     private _oPointsLength: number;
@@ -45,6 +46,8 @@ class PlotterView {
     private _grafOver: boolean;
     private _grafMouseX0: number;
     private _grafMouseX1: number;
+    private _grafMouseY0: number;
+    private _grafMouseY1: number;
     private _mouseDown: boolean;
     private _uTimer: MyTimer;
     private _graph: HTMLElement | null;
@@ -66,9 +69,10 @@ class PlotterView {
     private _yGridMeasure: string;
     private _yGridStep: number;
     private _XPressed: boolean;
-    private _baseYCord: number;
-    private _zoomCoefficient: number;
-    private _baset0: number;
+    private _baseYCord0: number;
+    private _baseYCord1: number;
+    private _zoomStep: number;
+    private _xZoomStep: number;
 
     constructor(params: IViewParams) {
         // @ts-ignore
@@ -96,7 +100,7 @@ class PlotterView {
         this.dt = 5; //period between frames
         this._olddt = this.dt;//old dt (need 4 key animation)
         this.u = 10;  //delta value of changing t0 and t1 every dt
-        this._oldu = this.u;//old u
+        this._oldu = this.u;//old ut0
         this._t0 = (new Date()).getTime(); //left visible border of the grafic
         this._t1 = this._t0 + this._T;//right visible border of the grafic
         this.animation = true;//animation trigger
@@ -108,6 +112,8 @@ class PlotterView {
         this._grafOver = false; //is mouse over graf canvas
         this._grafMouseX0 = 0;//mouse X over graf before
         this._grafMouseX1 = 0;//mouse X over graf now
+        this._grafMouseY0 = 0;
+        this._grafMouseY1 = 0;
         this._mouseDown = false;//is mouse down
         this._uTimer = new MyTimer({//timer 4 frames animation
             func: this._dtuChanger.bind(this),
@@ -146,9 +152,10 @@ class PlotterView {
         // @ts-ignore
         this._bctx = this._bottom.getContext("2d");//bottom brush init
         this._XPressed = false;
-        this._baseYCord = 0;
-        this._zoomCoefficient = 1;
-        this._baset0 = this._t0;
+        this._baseYCord0 = 0;
+        this._baseYCord1 = this._yGridMaxValue;
+        this._zoomStep = this._yGridMaxValue / (25);
+        this._xZoomStep = 400;
     }
 
     //element creation
@@ -180,7 +187,6 @@ class PlotterView {
         } else if (this._t1 < this._t0) {
             this._t1 = this._t0 + this._T;
         }
-        this._baset0 = this._t0;
     }
 
     //right way to set t1 with recalculation of t0 or T
@@ -191,8 +197,8 @@ class PlotterView {
             this._T = this._t1 - this._t0;
         } else if (this._t1 < this._t0) {
             this._t0 = this._t1 - this._T;
+
         }
-        this._baset0 = this._t0;
     }
 
     //right way to set t0 and t1 with recalculation T
@@ -202,7 +208,6 @@ class PlotterView {
             this._t0 = newt0;
             this._t1 = newt1;
             this._T = newt1 - newt0;
-            this._baset0 = this._t0;
         }
     }
 
@@ -231,13 +236,13 @@ class PlotterView {
 
         this._graf.width = this._grafRootDivWidth * this._pixelRatio / 1.15;
 
-        this._graf.height = this._grafRootDivHeight * this._pixelRatio / 1.4;
+        this._graf.height = (this._grafRootDivHeight - 15) * this._pixelRatio / 1.4;
         this._gcordX = this._graf.width / 1000;
         this._gcordY = this._graf.height / 1000;
 
         this._graf.style.width = this._grafRootDivWidth / 1.15 + "px";
 
-        this._graf.style.height = this._grafRootDivHeight / 1.4 + "px";
+        this._graf.style.height = (this._grafRootDivHeight - 15) / 1.4 + "px";
 
 
 
@@ -309,18 +314,11 @@ class PlotterView {
         this._gctx.beginPath();
         this._gctx.strokeStyle = "#C0C0C0";
         this._gctx.lineWidth = 1 * this._pixelRatio;
-        /*for (let i = 0; i < this._yGridMaxValue / this._yGridStep + 1; i++) {
-            this._lctx.fillText(String(this._yGridStep * i), (130 - String(i * this._yGridStep).length * 7) * this._lcordX, (1022 - 1000 / (this._yGridMaxValue / this._yGridStep) * i) * this._lcordY);
-        }*/
         for (let i = 0; i < this._yGridMaxValue / this._yGridStep + 1; i++) {
 
-            this._gctx.moveTo(0, (1000 - 1000 / (this._yGridMaxValue / this._yGridStep) * i) * this._gcordY);
-            this._gctx.lineTo(1000 * this._gcordX, (1000 - 1000 / (this._yGridMaxValue / this._yGridStep) * i) * this._gcordY);
+            this._gctx.moveTo(0, (this._YcordTransformerGraf(1000 - 1000 / (this._yGridMaxValue / this._yGridStep) * i)) * this._gcordY);
+            this._gctx.lineTo(1000 * this._gcordX, (this._YcordTransformerGraf(1000 - 1000 / (this._yGridMaxValue / this._yGridStep) * i)) * this._gcordY);
         }
-        /*for (let i = 0; i < 10; i++) {
-            this._gctx.moveTo(0, i * 100 * this._gcordY);
-            this._gctx.lineTo(1000 * this._gcordX, i * 100 * this._gcordY);
-        }*/
         this._gctx.stroke();
     }
 
@@ -333,9 +331,11 @@ class PlotterView {
         var gridX;
         for (let i = 0; i < (this._t1 - this._t0) / this.gridStep + 2; i++) {
             gridMilsec = Math.floor(this._t0 / this.gridStep) * this.gridStep + this.gridStep * i;
-            gridX = (gridMilsec - this._t0) * 1000 * this._gcordX / (this._t1 - this._t0);
-            this._gctx.moveTo(gridX, 0);
-            this._gctx.lineTo(gridX, 1000 * this._gcordY);
+            gridX = (gridMilsec - this._t0) * 1000 / (this._t1 - this._t0);
+            //console.log(this._XcordTransformer(gridMilsec));
+
+            this._gctx.moveTo(this._XcordTransformer(gridMilsec) * this._gcordX, this._YcordTransformerGraf(0) * this._gcordY);
+            this._gctx.lineTo(this._XcordTransformer(gridMilsec) * this._gcordX, this._YcordTransformerGraf(1000) * this._gcordY);
         }
         this._gctx.stroke();
         this._bctx.beginPath();
@@ -354,11 +354,11 @@ class PlotterView {
             gridX = (gridMilsec - this._t0) * 1000 * this._gcordX / (this._t1 - this._t0);
             if (skipI > 0) {
                 if (gridMilsec % ((skipI + 1) * this.gridStep) == this._baseGridPoint % ((skipI + 1) * this.gridStep)) {
-                    this._bctx.strokeText(this._timeAdapt(gridMilsec), gridX, 100 * this._bcordY);
+                    this._bctx.strokeText(this._timeAdapt(gridMilsec), this._XcordTransformer(gridMilsec) * this._gcordX, 100 * this._bcordY);
                     i += skipI;
                 }
             } else {
-                this._bctx.strokeText(this._timeAdapt(gridMilsec), gridX, 100 * this._bcordY);
+                this._bctx.strokeText(this._timeAdapt(gridMilsec), this._XcordTransformer(gridMilsec) * this._gcordX, 100 * this._bcordY);
             }
 
 
@@ -366,16 +366,17 @@ class PlotterView {
         }
         this._bctx.stroke();
     }
-    public _cordTransformer(t: number, y: number) {
-        let localX: number = (t - this._baset0) * 1000 / this._zoomCoefficient / ((this._baset0 + this._T / this._zoomCoefficient) - this._baset0);
-        let localY: number = (y - this._baseYCord) * this._zoomCoefficient;
-        /*this._baseYCord = 0; y коорда
-        this._zoomCoefficient = 1; коф увеличения
-        this._baset0 = this._t0; базовое время
-        lx0 = (Number(this.model.points[i].date) - this._t0) * 1000 * this._gcordX / (this._t1 - this._t0);
-        lY0 = (1000 - 1000 / this._yGridMaxValue * this.model.points[i].value) * this._gcordY;*/
-
-        console.log(localX, localY);
+    private _XcordTransformer(t: number) {
+        let localX: number = (t - this._t0) * this.gridStep / this._T;
+        return localX;
+    }
+    private _YcordTransformerLeft(y: number) {
+        let localY: number = (y - this._baseYCord0) * (this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0 + 1)) - 714.3 * ((this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0 + 1)) - 1);
+        return localY;
+    }
+    private _YcordTransformerGraf(y: number) {
+        let localY: number = 1000 - ((y - this._baseYCord0) * 1000 / this._yGridMaxValue) * (this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0 + 1));
+        return localY;
     }
     //graf line draw
     private _grafLineDraw() {
@@ -384,14 +385,31 @@ class PlotterView {
         //console.log(this.model.points);
         for (let i = 0; i < this.model.points.length - 1; i++) {
             if ((this._t0 >= Number(this.model.points[i].date)) && (this._t0 <= Number(this.model.points[i + 1].date))) {
-                i0 = i;
+                if (i - 2 >= 0) {
+                    i0 = i - 2;
+                } else if (i - 1 >= 0) {
+                    i0 = i - 1;
+                } else {
+                    i0 = 0
+                }
+
             }
             if ((this._t1 >= Number(this.model.points[i].date)) && (this._t1 <= Number(this.model.points[i + 1].date))) {
-                i1 = i + 1;
+                if (this.model.points.length - 2 >= i + 2) {
+                    i1 = i + 1;
+                } else {
+                    i1 = i + 1;
+                }
+
             } else {
                 i1 = this.model.points.length - 1;
             }
         }
+        /*if (i0 > i1) {
+            let c: number = i0;
+            i0 = i1;
+            i1 = c;
+        }*/
         var lx0;
         var lY0;
         var lx1;
@@ -400,12 +418,14 @@ class PlotterView {
         this._gctx.strokeStyle = "black";
         this._gctx.lineWidth = 2 * this._pixelRatio;
         for (let i = i0; i < i1; i++) {
-            lx0 = (Number(this.model.points[i].date) - this._t0) * 1000 * this._gcordX / (this._t1 - this._t0);
-            lY0 = (1000 - 1000 / this._yGridMaxValue * this.model.points[i].value) * this._gcordY;
-            lx1 = (Number(this.model.points[i + 1].date) - this._t0) * 1000 * this._gcordX / (this._t1 - this._t0);
-            lY1 = (1000 - 1000 / this._yGridMaxValue * this.model.points[i + 1].value) * this._gcordY;
-            this._gctx.moveTo(lx0, lY0);
-            this._gctx.lineTo(lx1, lY1);
+            lx0 = this._XcordTransformer(Number(this.model.points[i].date)) * this._gcordX;
+            lY0 = this._YcordTransformerGraf(this.model.points[i].value) * this._gcordY;
+            lx1 = this._XcordTransformer((Number(this.model.points[i + 1].date))) * this._gcordX;
+            lY1 = this._YcordTransformerGraf(this.model.points[i + 1].value) * this._gcordY;
+            if (lx0 <= lx1) {
+                this._gctx.moveTo(lx0, lY0);
+                this._gctx.lineTo(lx1, lY1);
+            }
         }
         this._gctx.stroke();
         this._gctx.beginPath();
@@ -413,8 +433,8 @@ class PlotterView {
         this._gctx.lineWidth = 1 * this._pixelRatio;
         this._gctx.font = 14 * this._pixelRatio + "px Verdana";
         for (let i = i0; i < i1; i++) {
-            lx0 = (Number(this.model.points[i].date) - this._t0) * 1000 * this._gcordX / (this._t1 - this._t0);
-            lY0 = (1000 - 1000 / this._yGridMaxValue * this.model.points[i].value) * this._gcordY;
+            lx0 = this._XcordTransformer(Number(this.model.points[i].date)) * this._gcordX;
+            lY0 = this._YcordTransformerGraf(this.model.points[i].value) * this._gcordY;
             this._gctx.strokeText(String(this.model.points[i].value), lx0, lY0);
         }
         this._gctx.stroke();
@@ -427,15 +447,9 @@ class PlotterView {
         this._lctx.lineWidth = 2 * this._pixelRatio;
         this._lctx.font = 12 * this._pixelRatio + "px Verdana";
         this._lctx.fillText(this._yGridMeasure, 10 * this._lcordX, 25 * this._lcordY);
-        for (let i = 0; i < this._yGridMaxValue / this._yGridStep; i++) {
-            this._lctx.fillText(String(this._yGridStep * i), (800 - String(i * this._yGridStep).length * 21) * this._lcordX, (720 - 714 / (this._yGridMaxValue / this._yGridStep) * i) * this._lcordY);
+        for (let i = -1; i < this._yGridMaxValue / this._yGridStep; i++) {
+            this._lctx.fillText(String(this._yGridStep * ((this._yGridMaxValue / this._yGridStep) - i - 1)), (800 - String(((this._yGridMaxValue / this._yGridStep) - i - 1) * this._yGridStep).length * 21) * this._lcordX, (5 + 15 * (this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0 + 1)) + this._YcordTransformerLeft(699.3 - 699.3 / (this._yGridMaxValue / this._yGridStep) * ((this._yGridMaxValue / this._yGridStep) - i - 1))) * this._lcordY);
         }
-        this._lctx.fillText(String(this._yGridStep * (this._yGridMaxValue / this._yGridStep)), (800 - String((this._yGridMaxValue / this._yGridStep + 1) * this._yGridStep).length * 21) * this._lcordX, 13 * this._lcordY);
-        /*this._lctx.fillText(String(0), 135 * this._lcordX, 995 * this._lcordY);
-        for (let i = 1; i < 10; i++) {
-            this._lctx.fillText(String(100 * i), 129 * this._lcordX, (1000 - 100 * i) * this._lcordY);
-        }
-        this._lctx.fillText(String(100), 120.5 * this._lcordX, 25 * this._lcordY);*/
         this._lctx.stroke();
     }
 
@@ -478,9 +492,94 @@ class PlotterView {
             this._t0 = this._t0 + this.u;
             this._t1 = this._t1 + this.u;
             this._uTimer.delay = this.dt;
-            this._baset0 = this._t0;
         } else if (this.dt == 0) {
             this._uTimer.delay = 10;
+        }
+    }
+    public setBaseY0Y1(lowerStep: number, upperStep: number) {
+        if (this._baseYCord0 + lowerStep < this._baseYCord1 + upperStep) {
+            this._baseYCord0 += lowerStep;
+            this._baseYCord1 += upperStep;
+            if (this._baseYCord0 < 0) {
+                //this._zoomStep -= Math.abs(this._baseYCord0);
+                this._baseYCord0 = 0;
+            }
+            if (this._baseYCord1 > this._yGridMaxValue) {
+                //this._zoomStep -= this._baseYCord1 - this._yGridMaxValue;
+                this._baseYCord1 = this._yGridMaxValue;
+            }
+        }
+
+
+        /*if (this._baseYCord0 >= this._yGridMaxValue) {
+            this._baseYCord0 = this._yGridMaxValue * (1 - (this._baseYCord1 - this._baseYCord0) / this._yGridMaxValue);
+            this._baseYCord1 = this._yGridMaxValue;
+        }
+        if (this._baseYCord0 < 0) {
+            let deltaY = Math.abs(this._baseYCord0);
+            this._baseYCord0 = 0;
+            this._baseYCord1 += deltaY;
+        }
+        if (this._baseYCord1 > this._yGridMaxValue) {
+            let deltaY = this._baseYCord1 - this._yGridMaxValue;
+            this._baseYCord1 = this._yGridMaxValue;
+            this._baseYCord0 -= deltaY;
+        }
+        if (this._baseYCord1 <= 0) {
+            this._baseYCord1 = this._baseYCord1 - this._baseYCord0;
+            this._baseYCord0 = 0;
+        }
+        if ((this._baseYCord0 <= 0) && (this._baseYCord1 >= this._yGridMaxValue)) {
+            this._baseYCord0 = 0;
+            this._baseYCord1 = this._yGridMaxValue;
+        }
+        console.log("0: " + this._baseYCord0);
+        console.log("1: " + this._baseYCord1);
+        if (this._baseYCord0 > this._baseYCord1) {
+            let c: number = this._baseYCord0;
+            this._baseYCord0 = this._baseYCord1;
+            this._baseYCord1 = c;
+        }*/
+        //this._zoomCoefficientX = this._zoomCoefficientX * (this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0)) / this._zoomCoefficientY;
+
+
+    }
+    //ZOOM
+    private _xZoomHandler(event: WheelEvent, lxZoomStep: number) {
+
+        // @ts-ignore
+        let leftStep = (this._grafMouseX1 / (document.getElementById(this._container.id + '_' + 'graf').width / this._pixelRatio) * lxZoomStep / (this._baseYCord1 - this._baseYCord0) * this._T) / (this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0));
+        // @ts-ignore
+        let rightStep = ((document.getElementById(this._container.id + '_' + 'graf').width / this._pixelRatio - this._grafMouseX1) / document.getElementById(this._container.id + '_' + 'graf').width / this._pixelRatio * lxZoomStep / (this._baseYCord1 - this._baseYCord0) * this._T) / (this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0));
+        /// (this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0));
+        console.log("l" + leftStep);
+        console.log("r" + rightStep);
+        console.log("l+r" + (leftStep + rightStep));
+        this._t0 = this._t0 - leftStep * Math.sign(event.deltaY);
+        this._t1 = this._t1 + rightStep * Math.sign(event.deltaY);
+        this._T = this._t1 - this._t0;
+    }
+    private _xyZoomHandler(event: WheelEvent) {
+        console.log(this._grafMouseY1);
+        // @ts-ignore
+        console.log(document.getElementById(this._container.id + '_' + 'graf').height / this._pixelRatio);
+        // @ts-ignore
+        var upperStep = this._grafMouseY1 / (document.getElementById(this._container.id + '_' + 'graf').height / this._pixelRatio) * this._zoomStep; // ((this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0 + 1)));
+        // @ts-ignore
+        var lowerStep = (this._zoomStep - upperStep) / (this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0));//((document.getElementById(this._container.id + '_' + 'graf').height / this._pixelRatio) - this._grafMouseY1) / (document.getElementById(this._container.id + '_' + 'graf').height / this._pixelRatio) * this._zoomStep / (this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0)); // ((this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0 + 1)));
+        upperStep = upperStep / (this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0));
+        console.log("us" + upperStep);
+        console.log("ls" + lowerStep);
+        this.setBaseY0Y1(-1 * lowerStep * Math.sign(event.deltaY), upperStep * Math.sign(event.deltaY));
+        this._xZoomHandler(event, this._zoomStep);
+        this._zoomStep = this._yGridMaxValue / 25;
+    }
+    private _zoomHandler(event: WheelEvent) {
+        this._needFrame = true;
+        if (this._XPressed == true) {
+            this._xZoomHandler(event, this._xZoomStep);
+        } else {
+            this._xyZoomHandler(event);
         }
     }
 
@@ -546,39 +645,108 @@ class PlotterView {
                 _this._XPressed = false;
             }
         });
+        //ZOOM
         // @ts-ignore
         document.getElementById(this._container.id + '_' + "graf").addEventListener('wheel', (event) => {
-            if (_this._XPressed == true) {
-                event.preventDefault();
+            event.preventDefault();
+            this._zoomHandler(event);
+            /*if (_this._XPressed == false) {
                 // @ts-ignore
-                let leftStep = _this._grafMouseX1 / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;
+                var upperStep = _this._grafMouseY1 / this._yGridMaxValue * this._yGridMaxValue / 25; // ((this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0 + 1)));
+                console.log("us " + upperStep);
                 // @ts-ignore
-                let rightStep = (document.getElementById(this._container.id + '_' + 'graf').width - _this._grafMouseX1) / document.getElementById(this._container.id + '_' + 'graf').width * _this.scrollSize;;
+                var lowerStep = (this._yGridMaxValue - _this._grafMouseY1) / this._yGridMaxValue * this._yGridMaxValue / 25; // ((this._yGridMaxValue / (this._baseYCord1 - this._baseYCord0 + 1)));
+                console.log("ls " + lowerStep);
                 //see more
+                this._zoomStep = this._yGridMaxValue / 25;
+
                 if (event.deltaY > 0) {
+                    //this.setBaseY0Y1(-1 * lowerStep, upperStep);
+                    this.setBaseY0Y1(-1 * this._zoomStep * ((this._yGridMaxValue - this._grafMouseY1 * (this._yGridMaxValue / ((this._grafRootDivHeight - 15) / 1.4)))) / this._yGridMaxValue, this._zoomStep * (this._grafMouseY1 * (this._yGridMaxValue / ((this._grafRootDivHeight - 15) / 1.4))) / this._yGridMaxValue);
                     this._needFrame = true;
-                    _this._t0 = _this._t0 - leftStep;
-                    _this._t1 = _this._t1 + rightStep;
-                    _this._baset0 = _this._t0;
+
+                    //_this._t1 = _this._t1 + lowerStep;
                 } else if (event.deltaY < 0) {
+                    //this.setBaseY0Y1(lowerStep, -1 * upperStep);
+                    this.setBaseY0Y1(this._zoomStep * ((this._yGridMaxValue - this._grafMouseY1 * (this._yGridMaxValue / ((this._grafRootDivHeight - 15) / 1.4)))) / this._yGridMaxValue, -1 * this._zoomStep * (this._grafMouseY1 * (this._yGridMaxValue / ((this._grafRootDivHeight - 15) / 1.4))) / this._yGridMaxValue);
                     this._needFrame = true;
-                    _this._t0 = _this._t0 + leftStep;
-                    _this._t1 = _this._t1 - rightStep;
-                    _this._baset0 = _this._t0;
                 }
             }
+
+            var leftStep = 0;
+            var rightStep = 0;
+            if (this._XPressed == false) {
+                // @ts-ignore
+                var leftStep = _this._grafMouseX1 / (document.getElementById(this._container.id + '_' + 'graf').width / this._pixelRatio) * this._zoomStep / (this._baseYCord1 - this._baseYCord0) * this._T;
+                // @ts-ignore
+                var rightStep = (document.getElementById(this._container.id + '_' + 'graf').width / this._pixelRatio - _this._grafMouseX1) / document.getElementById(this._container.id + '_' + 'graf').width / this._pixelRatio * this._zoomStep / (this._baseYCord1 - this._baseYCord0) * this._T;
+                //let tstep = _this.scrollSize;
+                console.log(leftStep + rightStep);
+            }
+
+
+            if (this._XPressed == false) {
+                // @ts-ignore
+                console.log((upperStep + lowerStep) + " = " + this._zoomStep);
+            }
+
+            //see more
+            if (event.deltaY > 0) {
+                this._needFrame = true;
+                _this._t0 = _this._t0 - leftStep;
+                //_this._t1 = _this._t1 + rightStep;
+                //_this._t0 = _this._t0 - tstep * (this._grafMouseX1 / (1 / (this._grafRootDivWidth / 1.15)));
+
+                //_this._baset0 = _this._baset0 - tstep * (this._grafMouseX1 / (1 / (this._grafRootDivWidth / 1.15)));
+                _this._t1 = _this._t1 + rightStep;
+                //_this._t1 = _this._t1 + tstep * (1 - this._grafMouseX1 / (1 / (this._grafRootDivWidth / 1.15)));
+                if (this._t0 > this._t1) {
+                    let c = this._t0;
+                    this._t0 = this._t1;
+                    this._t1 = c;
+                }
+
+                _this._T = (_this._t1 - _this._t0);
+                console.log("T: " + _this._T);
+            } else if (event.deltaY < 0) {
+                this._needFrame = true;
+                if (_this._t0 + leftStep < _this._t1 - rightStep) {
+                    _this._t0 = _this._t0 + leftStep;
+                    _this._t1 = _this._t1 - rightStep;
+
+                    _this._T = (_this._t1 - _this._t0);
+                }
+                _this._t0 = _this._t0 + leftStep;
+                //_this._t0 = _this._t0 + tstep * (this._grafMouseX1 / (1 / (this._grafRootDivWidth / 1.15)));
+
+                //_this._baset0 = _this._baset0 + tstep * (this._grafMouseX1 / (1 / (this._grafRootDivWidth / 1.15)));
+                _this._t1 = _this._t1 - rightStep;
+                //_this._t1 = _this._t1 - tstep * (1 - this._grafMouseX1 / (1 / (this._grafRootDivWidth / 1.15)));
+                if (this._t0 > this._t1) {
+                    let c = this._t0;
+                    this._t0 = this._t1;
+                    this._t1 = c;
+                }
+                if (this._XPressed == true) {
+                    this._zoomCoefficientX = this._zoomCoefficientX * this._T / (_this._t1 - _this._t0);
+                }
+                _this._T = (_this._t1 - _this._t0);
+            }
+            */
         });
         // @ts-ignore
         document.getElementById(this._container.id + '_' + "graf").addEventListener('mousemove', (event) => {
             _this._grafMouseX0 = _this._grafMouseX1;
             _this._grafMouseX1 = event.offsetX;
+            _this._grafMouseY0 = _this._grafMouseY1;
+            _this._grafMouseY1 = event.offsetY;
             if (_this._mouseDown == true) {
                 this._needFrame = true;
+                this._T = this._t1 - this._t0;
                 // @ts-ignore
                 let deltaOffset = (_this._grafMouseX1 - _this._grafMouseX0) * (_this._t1 - _this._t0) / (document.getElementById(this._container.id + '_' + 'graf').width / this._pixelRatio);
                 _this._t0 = _this._t0 - deltaOffset;
                 _this._t1 = _this._t1 - deltaOffset;
-                _this._baset0 = _this._t0;
             }
 
 
